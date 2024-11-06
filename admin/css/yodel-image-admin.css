@@ -1,0 +1,16 @@
+/**
+ * All of the CSS for your admin-specific functionality should be
+ * included in this file.
+ */
+
+#yodel-image-admin {
+  position: relative;
+}
+
+.wp-admin[class*="yodel-image"] #wpcontent {
+  padding: 0 !important;
+}
+
+.wp-admin[class*="yodel-image"] #wpbody-content {
+  padding: 0 !important;
+}

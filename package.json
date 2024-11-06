@@ -1,0 +1,71 @@
+{
+  "name": "yodel-image",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "wp-scripts start",
+    "build": "wp-scripts build",
+    "format": "wp-scripts format",
+    "lint:css": "wp-scripts lint-style --fix",
+    "lint:js": "wp-scripts lint-js",
+    "test:e2e": "wp-scripts test-e2e ./src",
+    "test:unit": "wp-scripts test-unit-js ./src",
+    "zip": "npm run build && wp-scripts plugin-zip"
+  },
+  "dependencies": {
+    "@hookform/resolvers": "^3.9.0",
+    "@radix-ui/react-dialog": "^1.1.2",
+    "@radix-ui/react-label": "^2.1.0",
+    "@radix-ui/react-navigation-menu": "^1.2.1",
+    "@radix-ui/react-separator": "^1.1.0",
+    "@radix-ui/react-slot": "^1.1.0",
+    "@radix-ui/react-tooltip": "^1.1.3",
+    "@stripe/stripe-js": "^4.9.0",
+    "@tanstack/react-query": "^5.59.16",
+    "@tanstack/react-table": "^8.20.5",
+    "axios": "^1.7.7",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.1.1",
+    "copy-to-clipboard": "^3.3.3",
+    "date-fns": "^4.1.0",
+    "js-cookie": "^3.0.5",
+    "lucide-react": "^0.451.0",
+    "postcss": "^8.4.47",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-hook-form": "^7.53.0",
+    "react-router-dom": "^6.27.0",
+    "tailwind-merge": "^2.5.3",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@tailwindcss/aspect-ratio": "^0.4.2",
+    "@tailwindcss/typography": "^0.5.15",
+    "@types/js-cookie": "^3.0.6",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@wordpress/scripts": "^30.4.0",
+    "autoprefixer": "^10.4.20",
+    "postcss-prefix-selector": "^2.1.0",
+    "tailwindcss": "^3.4.14",
+    "tailwindcss-animate": "^1.0.7"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "files": [
+    "**/*.php",
+    "public/**/*",
+    "admin/**/*",
+    "build"
+  ]
+}
