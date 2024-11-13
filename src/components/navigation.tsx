@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 // import { Icons } from "@/components/icons"
 import {
@@ -51,9 +51,11 @@ const components: { title: string; href: string; description: string }[] = [
 ];
 
 export function Navigation() {
+  const pathname = useLocation().pathname;
+
   return (
     <NavigationMenu>
-      <NavigationMenuList>
+      <NavigationMenuList className="">
         {/* <NavigationMenuItem>
           <NavigationMenuTrigger>Getting started</NavigationMenuTrigger>
           <NavigationMenuContent>
@@ -104,19 +106,41 @@ export function Navigation() {
             </ul>
           </NavigationMenuContent>
         </NavigationMenuItem> */}
-        <NavigationMenuItem>
-          <Link to="/">
-            <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-              Images
-            </NavigationMenuLink>
-          </Link>
+        <NavigationMenuItem className="mb-0">
+          <NavigationMenuLink
+            className={cn(
+              navigationMenuTriggerStyle(),
+              "h-12 outline-none rounded-none bg-transparent border-b-2 border-transparent hover:border-b-primary focus:outline-none focus:ring-0",
+              pathname === "/" && "border-b-primary"
+            )}
+            asChild
+          >
+            <Link to="/">Gallery</Link>
+          </NavigationMenuLink>
         </NavigationMenuItem>
-        <NavigationMenuItem>
-          <Link to="/generate">
-            <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-              Generate
-            </NavigationMenuLink>
-          </Link>
+        <NavigationMenuItem className="mb-0">
+          <NavigationMenuLink
+            className={cn(
+              navigationMenuTriggerStyle(),
+              "h-12 outline-none rounded-none bg-transparent border-b-2 border-transparent hover:border-b-primary focus:outline-none focus:ring-0",
+              pathname === "/generate" && "border-b-primary"
+            )}
+            asChild
+          >
+            <Link to="/generate">Generate</Link>
+          </NavigationMenuLink>
+        </NavigationMenuItem>
+        <NavigationMenuItem className="mb-0">
+          <NavigationMenuLink
+            className={cn(
+              navigationMenuTriggerStyle(),
+              "h-12 outline-none rounded-none bg-transparent border-b-2 border-transparent hover:border-b-primary focus:outline-none focus:ring-0",
+              pathname === "/settings" && "border-b-primary"
+            )}
+            asChild
+          >
+            <Link to="/settings">Settings</Link>
+          </NavigationMenuLink>
         </NavigationMenuItem>
       </NavigationMenuList>
     </NavigationMenu>

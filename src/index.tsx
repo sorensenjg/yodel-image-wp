@@ -1,11 +1,12 @@
 import { createRoot } from "react-dom/client";
 import App from "./app";
-import type { Config } from "@/types";
+import type { Config, Settings } from "@/types";
 
 declare global {
   interface Window {
     yodelImageAdmin: {
       config: Config;
+      settings: Settings;
     };
   }
 }

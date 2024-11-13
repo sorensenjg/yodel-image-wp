@@ -24,7 +24,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { CopyToClipboardButton } from "@/components/copy-to-clipboard-button";
 import { GenerateMetadata } from "@/components/generate-metadata";
-import { ImageEditor } from "@/components/image-editor";
+// import { ImageEditorModal } from "@/components/image-editor";
 import { SERVICES } from "@/config";
 import type { Image } from "@/types";
 
@@ -112,7 +112,7 @@ export function ImageDetails({ image, ...props }: ImageDetailsProps) {
                 <SheetTitle className="sr-only">{titleValue}</SheetTitle>
                 <div className="space-y-6 pb-16">
                   <div className="flex flex-col gap-x-8 gap-y-4 mt-4 mb-8">
-                    <div className="relative aspect-square w-full overflow-hidden rounded border bg-transparent-image md:max-w-[400px]">
+                    <div className="relative aspect-[1/1] w-full overflow-hidden rounded border bg-transparent-image md:max-w-[400px]">
                       <img
                         className="absolute top-0 left-0 w-full h-full object-cover"
                         src={image.source_url}
@@ -121,9 +121,68 @@ export function ImageDetails({ image, ...props }: ImageDetailsProps) {
                     </div>
                     <div className="flex flex-col">
                       <div className="flex items-center gap-2 mb-2">
-                        <h2 className="text-2xl font-bold">
+                        <h2 className="w-full text-2xl font-bold">
                           <span className="sr-only">Details for </span>
-                          {titleValue}
+                          <div className="flex justify-between items-center gap-2">
+                            <FormField
+                              control={form.control}
+                              name="title"
+                              render={({ field }) => (
+                                <FormItem className="flex-1 space-y-0">
+                                  <FormLabel className="sr-only">
+                                    Title
+                                  </FormLabel>
+                                  {isEditing.title ? (
+                                    <FormControl>
+                                      <Input
+                                        {...field}
+                                        placeholder="Add a title to this image"
+                                        onBlur={() => {
+                                          setIsEditing((prev) => ({
+                                            ...prev,
+                                            title: false,
+                                          }));
+                                          form.handleSubmit(onSubmit)();
+                                        }}
+                                        autoFocus={isEditing.title}
+                                      />
+                                    </FormControl>
+                                  ) : (
+                                    <span
+                                      // className="text-muted-foreground text-sm cursor-pointer"
+                                      onClick={() =>
+                                        setIsEditing((prev) => ({
+                                          ...prev,
+                                          title: true,
+                                        }))
+                                      }
+                                    >
+                                      {titleValue || (
+                                        <span className="italic">
+                                          Add a title to this image
+                                        </span>
+                                      )}
+                                    </span>
+                                  )}
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            <GenerateMetadata
+                              image={image}
+                              services={[SERVICES.title]}
+                              buttonProps={{
+                                variant: "ghost",
+                              }}
+                              onComplete={(value) => {
+                                form.setValue("title", value.title);
+                                setIsEditing((prev) => ({
+                                  ...prev,
+                                  title: true,
+                                }));
+                              }}
+                            />
+                          </div>
                         </h2>
                         {/* <Button
                           type="button"
@@ -143,12 +202,15 @@ export function ImageDetails({ image, ...props }: ImageDetailsProps) {
                         </Button> */}
                       </div>
                       <div className="flex items-center gap-2">
-                        <ImageEditor image={image} />
+                        {/* <ImageEditorModal
+                          image={image}
+                          modalProps={{ className: "!rounded-none" }}
+                        /> */}
                         <GenerateMetadata
                           image={image}
                           services={Object.values(SERVICES)}
                           buttonProps={{
-                            title: "Generate Metadata",
+                            title: "Generate All Metadata",
                             variant: "secondary",
                           }}
                           onComplete={(value) => {

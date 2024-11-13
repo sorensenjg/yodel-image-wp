@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { SparklesIcon, Loader2Icon } from "lucide-react";
 import { cn, convertImageUrlToDataUrl } from "@/lib/utils";
-import { generateMetadata } from "@/lib/api";
+import { useGenerateMetadata } from "@/lib/api";
 import { Button, ButtonProps } from "@/components/ui/button";
 import {
   Tooltip,
@@ -74,6 +74,7 @@ export function GenerateMetadata({
 }: GenerateMetadataProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const mutation = useGenerateMetadata();
 
   const handleGenerateMetadata = async () => {
     setIsLoading(true);
@@ -81,14 +82,14 @@ export function GenerateMetadata({
     // convert image url to image data url
     const imageDataUrl = await convertImageUrlToDataUrl(image.source_url);
 
-    generateMetadata(
-      imageDataUrl,
-      services.reduce((acc, service) => acc + service.cost, 0)
-    ).then((data) => {
-      onComplete?.(data);
-      setIsLoading(false);
-      setIsOpen(false);
+    const result = await mutation.mutateAsync({
+      image: imageDataUrl,
+      cost: services.reduce((acc, service) => acc + service.cost, 0),
     });
+
+    onComplete?.(result);
+    setIsLoading(false);
+    setIsOpen(false);
   };
 
   return (

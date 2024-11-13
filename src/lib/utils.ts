@@ -1,5 +1,6 @@
 import { clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
+import CryptoJS from "crypto-js";
 
 export function cn(...inputs: any[]) {
   return twMerge(clsx(inputs));
@@ -36,6 +37,35 @@ export function stripHtml(html: string | undefined) {
 
   return result;
 }
+
+export function generateSeedFromPrompt(prompt: string) {
+  let hash = 0;
+  for (let i = 0; i < prompt.length; i++) {
+    hash = (hash << 5) - hash + prompt.charCodeAt(i);
+    hash |= 0; // Convert to 32-bit integer
+  }
+  return Math.abs(hash); // Use absolute value to avoid negative seeds
+}
+
+export function generateIterationSeed(
+  originalSeed: number,
+  index: number,
+  temperature: number = 0.2
+): number {
+  const input = `${originalSeed}-${index}`;
+  const hash = CryptoJS.SHA256(input).toString(CryptoJS.enc.Hex);
+  // Convert a portion of the hash to an integer
+  const hashSeed = parseInt(hash.substring(0, 8), 16);
+
+  // Ensure temperature is between 0 and 1
+  const temp = Math.min(Math.max(temperature, 0), 1);
+
+  // Blend the original seed and hashSeed based on temperature
+  const blendedSeed = Math.floor(originalSeed * (1 - temp) + hashSeed * temp);
+
+  return blendedSeed;
+}
+
 export async function convertImageUrlToDataUrl(imageUrl: string) {
   const response = await fetch(imageUrl);
   const blob = await response.blob();

@@ -14,8 +14,8 @@
  *
  * @wordpress-plugin
  * Plugin Name:       Yodel Image
- * Plugin URI:        https://yodelayheehoo.com/yodel-image
- * Description:       Yodel Image provides AI generated images and captions, image optimization, magic background removal, and a comprehensive image editor.
+ * Plugin URI:        https://yodelayheehoo.com/   
+ * Description:       Yodel Image provides AI generated images and attributes, image optimization, magic background removal, and a comprehensive image editor.
  * Version:           1.0.0
  * Author:            Yodel
  * Author URI:        https://yodelayheehoo.com/

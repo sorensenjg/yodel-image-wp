@@ -1,4 +1,5 @@
 import { CropIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { updateImage } from "@/lib/wordpress";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,22 +11,36 @@ import {
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
-  DialogFooter,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { Editor } from "./soup";
 import type { Image } from "@/types";
 
-export function ImageEditor({ image }: { image: Image }) {
+interface ImageEditorModalProps {
+  image: Image;
+  triggerProps?: React.HTMLAttributes<HTMLButtonElement>;
+  modalProps?: React.HTMLAttributes<HTMLDialogElement>;
+}
+
+export function ImageEditorModal({
+  image,
+  triggerProps,
+  modalProps,
+}: ImageEditorModalProps) {
   return (
     <Dialog>
       <TooltipProvider>
         <Tooltip>
           <DialogTrigger asChild>
             <TooltipTrigger asChild>
-              <Button type="button" size="icon-xs" variant="secondary">
+              <Button
+                type="button"
+                size="icon-xs"
+                variant="secondary"
+                {...triggerProps}
+              >
                 <CropIcon aria-hidden="true" className="w-4 h-4" />
                 <span className="sr-only">Edit</span>
               </Button>
@@ -36,27 +51,25 @@ export function ImageEditor({ image }: { image: Image }) {
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
-      <DialogContent className="w-full max-w-full h-full overflow-auto">
-        <DialogHeader>
-          <DialogTitle>Generate Metadata?</DialogTitle>
-          <DialogDescription>
-            This will generate the following image metadata: title, description,
-            caption, and alternative text.
-          </DialogDescription>
+      <DialogContent
+        className={cn(
+          "w-full max-w-full h-full overflow-auto",
+          modalProps?.className
+        )}
+        aria-describedby={undefined}
+      >
+        <DialogHeader className="sr-only">
+          <DialogTitle>Image Editor</DialogTitle>
         </DialogHeader>
-        <DialogFooter>
-          <div className="w-full flex justify-between items-center">
-            <div>
-              <span className="font-bold">Cost:</span> 4 Credits
-            </div>
-            <Button
-              type="button"
-              // onClick={handleGenerateMetadata}
-            >
-              Confirm
-            </Button>
-          </div>
-        </DialogFooter>
+        <Editor
+          image={{
+            url: image.source_url,
+            mime: image.mime_type as any,
+            width: image.media_details.width,
+            height: image.media_details.height,
+            size: image.media_details.filesize,
+          }}
+        />
       </DialogContent>
     </Dialog>
   );

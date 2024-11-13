@@ -1,4 +1,3 @@
-import { useState, useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -35,14 +34,9 @@ const formSchema = z.object({
 type FormData = z.infer<typeof formSchema>;
 
 export function Credits() {
-  const [credits, setCredits] = useState(0);
-  const account = useAccount();
-
-  useEffect(() => {
-    if (account) {
-      setCredits(account.credits);
-    }
-  }, [account]);
+  const {
+    data: { credits, customer_id },
+  } = useAccount({ credits: 10 });
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -53,11 +47,7 @@ export function Credits() {
   const quantityValue = form.watch("quantity");
 
   async function onSubmit(values: FormData) {
-    await purchaseCredits(
-      values.quantity,
-      account.customer_id,
-      window.location.href
-    );
+    await purchaseCredits(values.quantity, customer_id, window.location.href);
   }
 
   return (

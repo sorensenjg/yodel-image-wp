@@ -61,8 +61,7 @@ class Yodel_Image_Admin {
 			\Carbon_Fields\Carbon_Fields::boot();
 		} ); 
 		add_action( 'admin_menu', array( $this, 'register_admin_menu' ) );
-        add_action( 'wp_ajax_yodel_image_create_metadata_prediction', array( $this, 'create_metadata_prediction' ) ); 
-		add_action( 'wp_ajax_yodel_image_get_metadata_prediction', array( $this, 'get_metadata_prediction' ) ); 
+        add_action( 'wp_ajax_yodel_image_update_options', array( $this, 'update_options' ) ); 
 	}
 
 	/**
@@ -150,14 +149,16 @@ class Yodel_Image_Admin {
             'config' => array(
 				'version' 			=> $this->version,   
 				'rootId' 			=> 'yodel-image-admin', 
-				'apiUrl'			=> $this->api_url . '/api', 
-				'apiKey'			=> get_option('yodel_image_api_key', '60e3edb4-1b94-4728-a9ce-727ff72c3984'), 
+				'apiUrl'			=> $this->api_url, 
 				'ajaxUrl' 			=> admin_url('admin-ajax.php'),     
 				'ajaxNonce' 		=> wp_create_nonce('yodel-image-nonce'),  
 				'restUrl' 			=> esc_url(rest_url('wp/v2')),
 				'restNonce' 		=> wp_create_nonce('wp_rest'),
 				'stripePublicKey' 	=> $this->stripe_public_key,  
             ),
+			'settings' => array(
+				'apiKey'			=> get_option('yodel_image_api_key'),  
+			) 
         ]);
 	}
 
@@ -179,6 +180,19 @@ class Yodel_Image_Admin {
 		?>
 		<div id="yodel-image-admin"></div>  	 
 		<?php 
-	}
+	} 
+
+	public function update_options() { 
+		check_ajax_referer( 'yodel-image-nonce', 'nonce' ); 
+
+		$options = $_POST; 
+        unset($options['action'], $options['nonce']); 
+
+		foreach ( $options as $key => $value ) { 
+			update_option( $key, $value );
+		}
+
+		wp_send_json_success( array( 'message' => 'Options updated successfully' ) );
+    }
 
 }

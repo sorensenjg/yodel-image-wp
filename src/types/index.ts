@@ -2,12 +2,15 @@ export type Config = {
   version: string;
   rootId: string;
   apiUrl: string;
-  apiKey: string;
   ajaxUrl: string;
   ajaxNonce: string;
   restUrl: string;
   restNonce: string;
   stripePublicKey: string;
+};
+
+export type Settings = {
+  apiKey: string;
 };
 
 export type Image = {
