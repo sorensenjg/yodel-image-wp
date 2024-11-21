@@ -6,7 +6,7 @@
  * A class definition that includes attributes and functions used across both the
  * public-facing side of the site and the admin area.
  *
- * @link       https://yodelayheehoo.com
+ * @link       https://useyodel.com
  * @since      1.0.0
  *
  * @package    Yodel_Image
@@ -25,7 +25,7 @@
  * @since      1.0.0
  * @package    Yodel_Image
  * @subpackage Yodel_Image/includes
- * @author     Yodel <contact@yodelayheehoo.com>
+ * @author     Yodel <contact@useyodel.com>
  */
 class Yodel_Image {
 
@@ -120,9 +120,7 @@ class Yodel_Image {
 		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-yodel-image-i18n.php';
 
-		// require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-yodel-image-background-process.php'; 
-
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-yodel-image-updater.php'; 
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-yodel-image-updater.php';  
 
 		/**
 		 * The class responsible for defining all actions that occur in the admin area.
@@ -148,7 +146,7 @@ class Yodel_Image {
 	 * @since    1.0.0
 	 * @access   private
 	 */
-	private function set_locale() {
+	private function set_locale() { 
 
 		$plugin_i18n = new Yodel_Image_i18n();
 
@@ -165,13 +163,16 @@ class Yodel_Image {
 	 */
 	private function define_admin_hooks() { 
 
-		$plugin_updater = new Yodel_Image_Updater( $this->get_plugin_name(), $this->get_version(), $this->api_url );
+		if( ! class_exists( 'Yodel_Image_Updater' ) ) {
+			new Yodel_Image_Updater( $this->get_plugin_name(), $this->get_version(), $this->api_url );
+		}	   
+
 		$plugin_admin = new Yodel_Image_Admin( 
 			$this->get_plugin_name(), 
 			$this->get_version(),  
 			$this->api_url,     
 			$this->stripe_public_key 
-		);
+		); 
 
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );

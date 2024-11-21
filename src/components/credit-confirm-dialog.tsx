@@ -1,7 +1,4 @@
-import { useState } from "react";
-// import { cn } from "@/lib/utils";
-// import { useGenerateMetadata } from "@/lib/api";
-import { Button, ButtonProps } from "@/components/ui/button";
+import { ButtonProps } from "@/components/ui/button";
 import {
   Tooltip,
   TooltipContent,
@@ -35,8 +32,8 @@ interface CreditConfirmDialogProps extends ButtonProps {
 export function CreditConfirmDialog({
   children,
   tooltip,
-  title = "Are you absolutely sure?",
-  description = "This action cannot be undone. This will permanently delete your account and remove your data from our servers.",
+  title,
+  description,
   services = [],
   onConfirm,
 }: CreditConfirmDialogProps) {

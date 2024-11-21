@@ -34,7 +34,7 @@ const AlertDialogContent = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <>
     {/* <AlertDialogPortal> */}
-    <AlertDialogOverlay />
+    <AlertDialogOverlay className="!m-0 bg-transparent backdrop-blur-sm" />
     <AlertDialogPrimitive.Content
       ref={ref}
       className={cn(

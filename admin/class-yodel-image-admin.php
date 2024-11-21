@@ -3,7 +3,7 @@
 /**
  * The admin-specific functionality of the plugin.
  *
- * @link       https://yodelayheehoo.com
+ * @link       https://useyodel.com
  * @since      1.0.0
  *
  * @package    Yodel_Image
@@ -18,7 +18,7 @@
  *
  * @package    Yodel_Image
  * @subpackage Yodel_Image/admin
- * @author     Yodel <contact@yodelayheehoo.com>
+ * @author     Yodel <contact@useyodel.com>
  */
 class Yodel_Image_Admin { 
 
@@ -55,14 +55,12 @@ class Yodel_Image_Admin {
 		$this->plugin_name = $plugin_name;
 		$this->version = $version;
 		$this->api_url = $api_url; 
-		$this->stripe_public_key = $stripe_public_key;
+		$this->stripe_public_key = $stripe_public_key; 
 
-		add_action( 'after_setup_theme', function() {
-			\Carbon_Fields\Carbon_Fields::boot();
-		} ); 
 		add_action( 'admin_menu', array( $this, 'register_admin_menu' ) );
         add_action( 'wp_ajax_yodel_image_update_options', array( $this, 'update_options' ) ); 
-	}
+
+	} 
 
 	/**
 	 * Register the stylesheets for the admin area.
@@ -105,8 +103,6 @@ class Yodel_Image_Admin {
 		 * between the defined hooks and the functions defined in this
 		 * class.
 		 */
-		
-		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/yodel-image-admin.js', array( 'jquery' ), $this->version, false );
 
 		$build_dir = plugin_dir_path(__DIR__) . 'build/';
         $build_url = plugins_url('build/', __DIR__);
@@ -130,7 +126,7 @@ class Yodel_Image_Admin {
                 $filename = $file_info['filename'];
                 $handle = "{$this->plugin_name}-{$filename}";     
                 
-                if ($ext === 'js') {
+                if ($ext === 'js') { 
                     $deps = $asset_file['dependencies'] ?? [];
                     $version = $asset_file['version'] ?? filemtime($file_path);
 
@@ -160,12 +156,14 @@ class Yodel_Image_Admin {
 				'apiKey'			=> get_option('yodel_image_api_key'),  
 			) 
         ]);
+
+		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/yodel-image-admin.js', array( 'jquery', 'media-views' ), $this->version, true );
 	}
 
 	public function register_admin_menu() {
 		$icon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-mountain"><path d="m8 3 4 8 5-5 5 15H2L8 3z"/></svg>';
 
-		add_menu_page( 
+		add_menu_page(  
 			'Yodel Image',
 			'Yodel Image',
 			'manage_options',

@@ -1,30 +1,64 @@
 <?php
 
-class Yodel_Image_Updater {
+class Yodel_Image_Updater { 
     
     private $plugin_name;
     private $plugin_basename;
-	private $version; 
+    private $version; 
     private $api_url;
-
+    
     public $cache_key;
     public $cache_allowed;
 
-	public function __construct( $plugin_name, $version, $api_url ) {
-		$this->plugin_name = $plugin_name; 
+    public function __construct( $plugin_name, $version, $api_url ) {
+        $this->plugin_name = $plugin_name; 
         $this->plugin_basename = YODEL_IMAGE_BASENAME; 
-		$this->version = $version;
-		$this->api_url = $api_url;
+        $this->version = $version;
+        $this->api_url = $api_url;
 
         $this->cache_key = 'yodel_image_updater'; 
-		$this->cache_allowed = false;
+        $this->cache_allowed = false;
 
-		add_filter( 'plugins_api', array( $this, 'info' ), 20, 3);
+        add_filter( 'plugins_api', array( $this, 'info' ), 20, 3);
         add_filter( 'site_transient_update_plugins', array( $this, 'update' ) );
         add_action( 'upgrader_process_complete', array( $this, 'purge' ), 10, 2 );
-	}
+    }
 
-	function info( $res, $action, $args ) {
+    public function request() {
+
+        $remote = get_transient( $this->cache_key );
+
+        if( false === $remote || ! $this->cache_allowed ) {
+
+            $remote = wp_remote_get(
+                $this->api_url . '/api/wordpress/plugins/updater/info?slug=' . $this->plugin_name,   
+                array(
+                    'timeout' => 10,
+                    'headers' => array(
+                        'Accept' => 'application/json' 
+                    )
+                )
+            );  
+
+            if(
+                is_wp_error( $remote )
+                || 200 !== wp_remote_retrieve_response_code( $remote )
+                || empty( wp_remote_retrieve_body( $remote ) )
+            ) {
+                return false;
+            }
+
+            set_transient( $this->cache_key, $remote, DAY_IN_SECONDS );
+
+        } 
+
+        $remote = json_decode( wp_remote_retrieve_body( $remote ) ); 
+
+        return $remote;
+
+    }
+
+    function info( $res, $action, $args ) {
 
         // do nothing if you're not getting plugin information right now
         if( 'plugin_information' !== $action ) {
@@ -116,41 +150,4 @@ class Yodel_Image_Updater {
 
     }
 
-    public function request() {
-
-        $remote = get_transient( $this->cache_key );
-
-        if( false === $remote || ! $this->cache_allowed ) {
-
-            $remote = wp_remote_get(
-                $this->api_url . '/api/wordpress/yodel-image/updater/info',
-                array(
-                    'timeout' => 10,
-                    'headers' => array(
-                        'Accept' => 'application/json' 
-                    )
-                )
-            );  
-
-            if(
-                is_wp_error( $remote )
-                || 200 !== wp_remote_retrieve_response_code( $remote )
-                || empty( wp_remote_retrieve_body( $remote ) )
-            ) {
-                return false;
-            }
-
-            set_transient( $this->cache_key, $remote, DAY_IN_SECONDS );
-
-        } 
-
-        $remote = json_decode( wp_remote_retrieve_body( $remote ) ); 
-
-        // $utils = new Yodel_Image_Utils();
-        // $utils->console_log( $remote ); 
-
-        return $remote;
-
-    }
-
-}
+} 

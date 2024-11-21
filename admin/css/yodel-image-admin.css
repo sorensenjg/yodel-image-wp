@@ -14,3 +14,8 @@
 .wp-admin[class*="yodel-image"] #wpbody-content {
   padding: 0 !important;
 }
+
+#yodel-image-media { 
+  height: 100% !important;
+  overflow: hidden !important;  
+}

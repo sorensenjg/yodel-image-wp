@@ -5,7 +5,7 @@
  *
  * This file is used to markup the admin-facing aspects of the plugin.
  *
- * @link       https://yodelayheehoo.com
+ * @link       https://useyodel.com
  * @since      1.0.0
  *
  * @package    Yodel_Image

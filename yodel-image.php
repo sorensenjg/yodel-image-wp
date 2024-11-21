@@ -8,17 +8,17 @@
  * registers the activation and deactivation functions, and defines a function
  * that starts the plugin.
  *
- * @link              https://yodelayheehoo.com
+ * @link              https://useyodel.com
  * @since             1.0.0
  * @package           Yodel_Image
  *
  * @wordpress-plugin
  * Plugin Name:       Yodel Image
- * Plugin URI:        https://yodelayheehoo.com/   
+ * Plugin URI:        https://useyodel.com/   
  * Description:       Yodel Image provides AI generated images and attributes, image optimization, magic background removal, and a comprehensive image editor.
  * Version:           1.0.0
  * Author:            Yodel
- * Author URI:        https://yodelayheehoo.com/
+ * Author URI:        https://useyodel.com/
  * License:           GPL-2.0+
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
  * Text Domain:       yodel-image
@@ -35,9 +35,9 @@ if ( ! defined( 'WPINC' ) ) {
  * Start at version 1.0.0 and use SemVer - https://semver.org
  * Rename this for your plugin and update it as you release new versions.
  */
-define( 'YODEL_IMAGE_VERSION', '1.0.0' );    
+define( 'YODEL_IMAGE_VERSION', '1.0.0' );     
 define( 'YODEL_IMAGE_BASENAME',  plugin_basename( __FILE__ ) ); 
-define( 'YODEL_IMAGE_API_URL', WP_ENVIRONMENT_TYPE === 'local' ? 'http://localhost:3000' : 'https://yodelayheehoo.com' );
+define( 'YODEL_IMAGE_API_URL', ( defined( 'WP_ENVIRONMENT_TYPE' ) && WP_ENVIRONMENT_TYPE === 'local' ) ? 'http://localhost:3000' : 'https://useyodel.com' );
 define( 'YODEL_STRIPE_PUBLIC_KEY', 'pk_test_51QGV3JGLDYFcTbL6RDRzbippD9ZX7RFZHM4CHwytnKG5SS0GK57rO2JBipYomjdYM88B0orWEBLYN9LcSp7wTasG00htyMh4Sn' );  
 
 /**

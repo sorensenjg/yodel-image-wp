@@ -6,7 +6,7 @@
  * Loads and defines the internationalization files for this plugin
  * so that it is ready for translation.
  *
- * @link       https://yodelayheehoo.com
+ * @link       https://useyodel.com
  * @since      1.0.0
  *
  * @package    Yodel_Image
@@ -22,7 +22,7 @@
  * @since      1.0.0
  * @package    Yodel_Image
  * @subpackage Yodel_Image/includes
- * @author     Yodel <contact@yodelayheehoo.com>
+ * @author     Yodel <contact@useyodel.com>
  */
 class Yodel_Image_i18n {
 

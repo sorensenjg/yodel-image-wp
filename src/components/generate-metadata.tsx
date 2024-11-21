@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { SparklesIcon, Loader2Icon } from "lucide-react";
 import { cn, convertImageUrlToDataUrl } from "@/lib/utils";
-import { useGenerateMetadata } from "@/lib/api";
+import { useCredits, useGenerateMetadata } from "@/lib/api";
 import { Button, ButtonProps } from "@/components/ui/button";
 import {
   Tooltip,
@@ -18,6 +18,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { CreditMenu } from "@/components/credit-menu";
 import type { Image } from "@/types";
 
 interface GenerateMetadataButtonProps extends ButtonProps {
@@ -74,6 +75,7 @@ export function GenerateMetadata({
 }: GenerateMetadataProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const { data: credits, status } = useCredits();
   const mutation = useGenerateMetadata();
 
   const handleGenerateMetadata = async () => {
@@ -92,6 +94,13 @@ export function GenerateMetadata({
     setIsOpen(false);
   };
 
+  if (status === "pending") {
+    return null;
+  }
+
+  const hasInsufficientCredits =
+    credits < services.reduce((acc, service) => acc + service.cost, 0);
+
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <GenerateMetadataButton services={services} {...buttonProps}>
@@ -99,7 +108,7 @@ export function GenerateMetadata({
       </GenerateMetadataButton>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Generate Metadata?</DialogTitle>
+          <DialogTitle>Generate Metadata</DialogTitle>
           <DialogDescription>
             This will generate the following image metadata:{" "}
             {services.map((service) => service.name.toLowerCase()).join(", ")}.
@@ -111,16 +120,20 @@ export function GenerateMetadata({
               <span>Cost:</span>{" "}
               {services.reduce((acc, service) => acc + service.cost, 0)} Credits
             </p>
-            <Button type="button" onClick={handleGenerateMetadata}>
-              {isLoading ? (
-                <>
-                  Generating{" "}
-                  <Loader2Icon className="w-4 h-4 ml-2 animate-spin" />
-                </>
-              ) : (
-                "Confirm"
-              )}
-            </Button>
+            {!hasInsufficientCredits ? (
+              <Button type="button" onClick={handleGenerateMetadata}>
+                {isLoading ? (
+                  <>
+                    Generating{" "}
+                    <Loader2Icon className="w-4 h-4 ml-2 animate-spin" />
+                  </>
+                ) : (
+                  "Confirm"
+                )}
+              </Button>
+            ) : (
+              <CreditMenu />
+            )}
           </div>
         </DialogFooter>
       </DialogContent>

@@ -1,5 +1,7 @@
-import { createRoot } from "react-dom/client";
-import App from "./app";
+import React from "react";
+import { createRoot, Root } from "react-dom/client";
+import Admin from "./admin";
+import Media from "./media";
 import type { Config, Settings } from "@/types";
 
 declare global {
@@ -12,9 +14,37 @@ declare global {
 }
 
 const { yodelImageAdmin } = window;
-const adminNode = document.getElementById(yodelImageAdmin.config.rootId)!;
+const rootId = yodelImageAdmin.config.rootId;
+let root: Root | null = null;
 
-if (adminNode) {
-  const adminRoot = createRoot(adminNode);
-  adminRoot.render(<App />);
+const mountApp = (container: HTMLElement, component: React.ReactNode) => {
+  // if existing root, unmount first
+  unmountApp();
+
+  root = createRoot(container);
+  root.render(component);
+};
+
+const unmountApp = () => {
+  if (root) {
+    root.unmount();
+    root = null;
+  }
+};
+
+const adminContainer = document.getElementById(rootId);
+if (adminContainer) {
+  mountApp(adminContainer, <Admin />);
 }
+
+document.addEventListener("yodelImageMedia:content:rendered", () => {
+  const mediaFrameContainer = document.getElementById("yodel-image-media");
+
+  if (mediaFrameContainer) {
+    mountApp(mediaFrameContainer, <Media />);
+  }
+});
+
+window.addEventListener("beforeunload", () => {
+  unmountApp();
+});

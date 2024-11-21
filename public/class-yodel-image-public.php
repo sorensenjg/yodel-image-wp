@@ -3,7 +3,7 @@
 /**
  * The public-facing functionality of the plugin.
  *
- * @link       https://yodelayheehoo.com
+ * @link       https://useyodel.com
  * @since      1.0.0
  *
  * @package    Yodel_Image
@@ -18,7 +18,7 @@
  *
  * @package    Yodel_Image
  * @subpackage Yodel_Image/public
- * @author     Yodel <contact@yodelayheehoo.com>
+ * @author     Yodel <contact@useyodel.com>
  */
 class Yodel_Image_Public {
 

@@ -21,6 +21,25 @@ export function useAccount(initialData: { credits: number }) {
   return result;
 }
 
+export function useCredits() {
+  const result = useQuery({
+    queryKey: ["credits"],
+    queryFn: async () => {
+      const response = await axios.get(`${config.apiUrl}/api/account`, {
+        headers: {
+          Authorization: `Bearer ${settings.apiKey}`,
+        },
+      });
+      return response.data;
+    },
+  });
+
+  return {
+    ...result,
+    data: result.data?.credits ?? 0,
+  };
+}
+
 export function useServices() {
   const result = useQuery({
     queryKey: ["services"],
@@ -37,9 +56,11 @@ export function useServices() {
   return result;
 }
 
+const SVG_MODELS = ["recraft-ai/recraft-v3-svg"];
 export async function generateImage({
   model,
   prompt,
+  style,
   aspectRatio,
   outputFormat,
   outputQuality,
@@ -48,6 +69,7 @@ export async function generateImage({
 }: {
   model: string;
   prompt: string;
+  style?: string;
   aspectRatio?: string;
   outputFormat?: string;
   outputQuality?: number;
@@ -60,6 +82,7 @@ export async function generateImage({
       {
         model,
         prompt,
+        style,
         aspectRatio,
         outputFormat,
         outputQuality,
@@ -70,7 +93,9 @@ export async function generateImage({
         headers: {
           Authorization: `Bearer ${settings.apiKey}`,
         },
-        responseType: "blob",
+        ...(!SVG_MODELS.includes(model) && {
+          responseType: "blob",
+        }),
       }
     );
 
@@ -78,11 +103,31 @@ export async function generateImage({
       throw new Error(`Network response was not ok: ${response.statusText}`);
     }
 
-    return URL.createObjectURL(response.data);
+    let blob = response.data;
+
+    if (SVG_MODELS.includes(model)) {
+      blob = new Blob([response.data], {
+        type: "image/svg+xml;charset=UTF-8",
+      });
+    }
+
+    return URL.createObjectURL(blob);
   } catch (error) {
     console.error("Error generating image:", error);
     throw error;
   }
+}
+
+export function useGenerateImage() {
+  const client = useQueryClient();
+  const mutation = useMutation({
+    mutationFn: generateImage,
+    onSuccess: () => {
+      client.invalidateQueries({ queryKey: ["account"] });
+    },
+  });
+
+  return mutation;
 }
 
 export async function generateMetadata({

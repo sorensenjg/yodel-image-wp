@@ -60,8 +60,7 @@ export async function getImages(page: number = 1) {
 export async function saveImage(
   file: any,
   meta?: {
-    yodel_image_prompt: string;
-    yodel_image_settings: string;
+    yodel_image_input: string;
     yodel_image_seed: number;
   }
 ) {
