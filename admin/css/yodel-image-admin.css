@@ -3,10 +3,6 @@
  * included in this file.
  */
 
-#yodel-image-admin {
-  position: relative;
-}
-
 .wp-admin[class*="yodel-image"] #wpcontent {
   padding: 0 !important;
 }
@@ -15,7 +11,12 @@
   padding: 0 !important;
 }
 
-#yodel-image-media { 
+.wp-admin[class*="yodel-image"] #wpfooter {
+  display: none !important;
+}
+
+#yodel-image-select-media-content,
+#yodel-image-post-media-content {
   height: 100% !important;
-  overflow: hidden !important;  
+  overflow: hidden !important;
 }

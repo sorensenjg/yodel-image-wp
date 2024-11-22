@@ -124,15 +124,9 @@ const formSchema = z.object({
 
 type FormData = z.infer<typeof formSchema>;
 
-// function GenerateImageForm() {
-//   return (
-
-//   )
-// }
-
 export function GenerateImage() {
-  const { data: credits, status } = useCredits();
-  const { data: services } = useServices();
+  const { data: credits, status: creditsStatus } = useCredits();
+  const { data: services, status: servicesStatus } = useServices();
   const [images, setImages] = useState<OutputImage[]>([]);
   const [selected, setSelected] = useState<OutputImage | null>(null);
 
@@ -351,6 +345,14 @@ export function GenerateImage() {
     setSelected(null);
   };
 
+  if (creditsStatus === "pending" || servicesStatus === "pending") {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <LoadingIcon className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
+
   const isSelectedProduction = selected && !selected.isPreview;
 
   const selectedModelId = form.watch("model");
@@ -358,92 +360,87 @@ export function GenerateImage() {
     (service: any) => service.id === selectedModelId
   );
 
-  if (status === "pending") {
-    return null;
-  }
-
   const hasInsufficientCredits = credits < selectedModel.cost;
 
   return (
-    <div className="py-6">
-      <div className="grid h-full items-stretch gap-6 md:grid-cols-[1fr_300px]">
-        <div className="flex flex-col space-y-4 md:order-2">
-          <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit((values) =>
-                onSubmit(values, "generate")
+    <div className="grid h-full items-stretch gap-6 md:grid-cols-[1fr_300px]">
+      <div className="flex flex-col space-y-4 md:order-2">
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit((values) =>
+              onSubmit(values, "generate")
+            )}
+            className="space-y-4"
+          >
+            <FormField
+              control={form.control}
+              name="prompt"
+              render={({ field }) => (
+                <FormItem>
+                  <HoverCard openDelay={200}>
+                    <HoverCardTrigger asChild>
+                      <FormLabel className="flex items-center gap-2">
+                        Prompt <HelpIcon className="h-4 w-4" />
+                      </FormLabel>
+                    </HoverCardTrigger>
+                    <HoverCardContent
+                      className="prose w-[320px] text-sm"
+                      side="left"
+                    >
+                      <p>
+                        The <b>Prompt</b> is used to describe the image you want
+                        to create. It should be as detailed as possible to help
+                        instruct the generation process.
+                      </p>
+                      <p>
+                        For models that support text generation, any words you
+                        want to appear in the image itself, should be entered in
+                        "double quotes."
+                      </p>
+                    </HoverCardContent>
+                  </HoverCard>
+                  <FormControl>
+                    <Textarea
+                      className="h-32"
+                      placeholder='black forest gateau cake spelling out the words "Yodel Image", tasty, food photography'
+                      disabled={!!isSelectedProduction}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
               )}
-              className="space-y-4"
-            >
-              <FormField
-                control={form.control}
-                name="prompt"
-                render={({ field }) => (
-                  <FormItem>
-                    <HoverCard openDelay={200}>
-                      <HoverCardTrigger asChild>
-                        <FormLabel className="flex items-center gap-2">
-                          Prompt <HelpIcon className="h-4 w-4" />
-                        </FormLabel>
-                      </HoverCardTrigger>
-                      <HoverCardContent
-                        className="prose w-[320px] text-sm"
-                        side="left"
-                      >
-                        <p>
-                          The <b>Prompt</b> is used to describe the image you
-                          want to create. It should be as detailed as possible
-                          to help instruct the generation process.
-                        </p>
-                        <p>
-                          For models that support text generation, any words you
-                          want to appear in the image itself, should be entered
-                          in "double quotes."
-                        </p>
-                      </HoverCardContent>
-                    </HoverCard>
-                    <FormControl>
-                      <Textarea
-                        className="h-32"
-                        placeholder='black forest gateau cake spelling out the words "Yodel Image", tasty, food photography'
-                        disabled={!!isSelectedProduction}
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
+            />
+            {(!selected || !isSelectedProduction) && <ImageStyleSelector />}
+            <Collapsible>
+              <CollapsibleTrigger asChild>
+                <Button className="w-full justify-start px-0" variant="link">
+                  Advanced Settings
+                  <ChevronsUpDown className="h-4 w-4 ml-2" />
+                </Button>
+              </CollapsibleTrigger>
+              <CollapsibleContent className="space-y-4 pt-4">
+                <ModelSelector
+                  // types={types}
+                  models={
+                    services
+                      ? services.filter(
+                          (service: any) =>
+                            service.category === "ai/text-to-image"
+                        )
+                      : []
+                  }
+                />
+                {(!selected || !isSelectedProduction) && (
+                  <AspectRatioSelector />
                 )}
-              />
-              {(!selected || !isSelectedProduction) && <ImageStyleSelector />}
-              <Collapsible>
-                <CollapsibleTrigger asChild>
-                  <Button className="w-full justify-start px-0" variant="link">
-                    Advanced Settings
-                    <ChevronsUpDown className="h-4 w-4 ml-2" />
-                  </Button>
-                </CollapsibleTrigger>
-                <CollapsibleContent className="space-y-4 pt-4">
-                  <ModelSelector
-                    // types={types}
-                    models={
-                      services
-                        ? services.filter(
-                            (service: any) =>
-                              service.category === "ai/text-to-image"
-                          )
-                        : []
-                    }
-                  />
-                  {(!selected || !isSelectedProduction) && (
-                    <AspectRatioSelector />
-                  )}
-                  {(!selected || !isSelectedProduction) && (
-                    <OutputFormatSelector />
-                  )}
-                  {(!selected || !isSelectedProduction) && (
-                    <OutputQualitySelector />
-                  )}
-                  {/* {(!selected || !isSelectedProduction) && (
+                {(!selected || !isSelectedProduction) && (
+                  <OutputFormatSelector />
+                )}
+                {(!selected || !isSelectedProduction) && (
+                  <OutputQualitySelector />
+                )}
+                {/* {(!selected || !isSelectedProduction) && (
                         <FormField
                           control={form.control}
                           name="outputQuantity"
@@ -464,50 +461,50 @@ export function GenerateImage() {
                           )}
                         />
                       )} */}
-                </CollapsibleContent>
-              </Collapsible>
-              <div className="flex justify-end items-center space-x-2 mt-12">
-                {form.formState.isSubmitting && (
-                  <LoadingIcon className="mr-2 h-4 w-4 animate-spin" />
-                )}
-                {images.length > 0 && (
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Button
+              </CollapsibleContent>
+            </Collapsible>
+            <div className="flex justify-end items-center space-x-2 mt-12">
+              {form.formState.isSubmitting && (
+                <LoadingIcon className="mr-2 h-4 w-4 animate-spin" />
+              )}
+              {images.length > 0 && (
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button
+                      type="button"
+                      variant="link"
+                      disabled={form.formState.isSubmitting}
+                    >
+                      Reset
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>
+                        Are you absolutely sure?
+                      </AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This action cannot be undone. This will permanently
+                        delete your current image(s) and reset your prompt and
+                        input.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel type="button">
+                        Cancel
+                      </AlertDialogCancel>
+                      <AlertDialogAction
                         type="button"
-                        variant="link"
-                        disabled={form.formState.isSubmitting}
+                        variant="destructive"
+                        onClick={handleReset}
                       >
-                        Reset
-                      </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>
-                          Are you absolutely sure?
-                        </AlertDialogTitle>
-                        <AlertDialogDescription>
-                          This action cannot be undone. This will permanently
-                          delete your current image(s) and reset your prompt and
-                          input.
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel type="button">
-                          Cancel
-                        </AlertDialogCancel>
-                        <AlertDialogAction
-                          type="button"
-                          variant="destructive"
-                          onClick={handleReset}
-                        >
-                          Confirm
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
-                )}
-                {/* {images.length === 1 && !images[0].isPreview && (
+                        Confirm
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              )}
+              {/* {images.length === 1 && !images[0].isPreview && (
                       <Button
                         type="button"
                         onClick={() => handleSave(images[0])}
@@ -516,7 +513,7 @@ export function GenerateImage() {
                       </Button>
                       )} */}
 
-                {/* {hasSufficientCredits ? (
+              {/* {hasSufficientCredits ? (
                         <Button
                           type="button"
                           disabled={form.formState.isSubmitting}
@@ -529,69 +526,39 @@ export function GenerateImage() {
                         <CreditMenu />
                       )} */}
 
-                {
-                  // (images.length === 0 || images.every((image) => image.isPreview))
-                  ((selected && !isSelectedProduction) ||
-                    images.length > 0 ||
-                    images.length === 0) && (
-                    <CreditConfirmDialog
-                      tooltip="Purchase credits to continue"
-                      title={
-                        selected && !isSelectedProduction
-                          ? "Iterate Selection"
-                          : "Generate Previews"
-                      }
-                      description={
-                        selected && !isSelectedProduction
-                          ? "This will generate iterations of your selected preview image."
-                          : "This will generate image preview(s) based on your prompt and input."
-                      }
-                      services={[
-                        {
-                          name: selectedModel?.name,
-                          cost: selectedModel?.cost,
-                          quantity: form.getValues("outputQuantity"),
-                        },
-                      ]}
-                      onConfirm={() => {
-                        form.handleSubmit(async (values) => {
-                          await onSubmit(
-                            values,
-                            selected && !isSelectedProduction
-                              ? "iterate"
-                              : "generate"
-                          );
-                        })();
-                      }}
-                    >
-                      <Button
-                        type="button"
-                        disabled={
-                          form.formState.isSubmitting || hasInsufficientCredits
-                        }
-                      >
-                        {selected && !isSelectedProduction
-                          ? "Iterate"
-                          : "Generate"}
-                      </Button>
-                    </CreditConfirmDialog>
-                  )
-                }
-                {selected && !isSelectedProduction && (
+              {
+                // (images.length === 0 || images.every((image) => image.isPreview))
+                ((selected && !isSelectedProduction) ||
+                  images.length > 0 ||
+                  images.length === 0) && (
                   <CreditConfirmDialog
-                    title="Upscale Selection"
-                    description="This will upscale your selected preview image to production quality."
+                    tooltip="Purchase credits to continue"
+                    title={
+                      selected && !isSelectedProduction
+                        ? "Iterate Selection"
+                        : "Generate Previews"
+                    }
+                    description={
+                      selected && !isSelectedProduction
+                        ? "This will generate iterations of your selected preview image."
+                        : "This will generate image preview(s) based on your prompt and input."
+                    }
                     services={[
                       {
                         name: selectedModel?.name,
                         cost: selectedModel?.cost,
-                        quantity: 1,
+                        quantity: form.getValues("outputQuantity"),
                       },
                     ]}
                     onConfirm={() => {
-                      form.handleSubmit(
-                        async (values) => await onSubmit(values, "upscale")
-                      )();
+                      form.handleSubmit(async (values) => {
+                        await onSubmit(
+                          values,
+                          selected && !isSelectedProduction
+                            ? "iterate"
+                            : "generate"
+                        );
+                      })();
                     }}
                   >
                     <Button
@@ -600,24 +567,54 @@ export function GenerateImage() {
                         form.formState.isSubmitting || hasInsufficientCredits
                       }
                     >
-                      Upscale
+                      {selected && !isSelectedProduction
+                        ? "Iterate"
+                        : "Generate"}
                     </Button>
                   </CreditConfirmDialog>
-                )}
-              </div>
-              {hasInsufficientCredits && (
-                <FormMessage className="text-center !mt-12">
-                  You do not have enough
-                  <br /> credits to continue
-                </FormMessage>
+                )
+              }
+              {selected && !isSelectedProduction && (
+                <CreditConfirmDialog
+                  title="Upscale Selection"
+                  description="This will upscale your selected preview image to production quality."
+                  services={[
+                    {
+                      name: selectedModel?.name,
+                      cost: selectedModel?.cost,
+                      quantity: 1,
+                    },
+                  ]}
+                  onConfirm={() => {
+                    form.handleSubmit(
+                      async (values) => await onSubmit(values, "upscale")
+                    )();
+                  }}
+                >
+                  <Button
+                    type="button"
+                    disabled={
+                      form.formState.isSubmitting || hasInsufficientCredits
+                    }
+                  >
+                    Upscale
+                  </Button>
+                </CreditConfirmDialog>
               )}
-            </form>
-          </Form>
-        </div>
-        <div className="md:order-1">
-          <div className="flex h-full flex-col space-y-4">
-            <div className={`grid grid-cols-2 gap-4`}>
-              {/* {Array.from({ length: 20 }).map((_, index) => (
+            </div>
+            {hasInsufficientCredits && (
+              <FormMessage className="text-center !mt-12">
+                You do not have enough
+                <br /> credits to continue
+              </FormMessage>
+            )}
+          </form>
+        </Form>
+      </div>
+      <div className="md:order-1">
+        <div className="flex h-full flex-col space-y-4">
+          <div className={`grid grid-cols-2 gap-4`}>
+            {/* {Array.from({ length: 20 }).map((_, index) => (
                       <div
                         key={index}
                         className="relative"
@@ -651,68 +648,65 @@ export function GenerateImage() {
                       </div>
                     ))} */}
 
-              {(images.length === 0 || form.formState.isSubmitting) &&
-                Array.from({ length: form.watch("outputQuantity") }).map(
-                  (_, index) => (
-                    <Skeleton
-                      key={index}
-                      className="w-full aspect-square rounded"
-                      style={{
-                        aspectRatio: form
-                          .watch("aspectRatio")
-                          .replace(":", " / "),
-                      }}
-                    />
-                  )
-                )}
-              {images.length > 0 &&
-                images.map((image, index) => (
-                  <div
+            {(images.length === 0 || form.formState.isSubmitting) &&
+              Array.from({ length: form.watch("outputQuantity") }).map(
+                (_, index) => (
+                  <Skeleton
                     key={index}
+                    className="w-full aspect-square rounded"
+                    style={{
+                      aspectRatio: form
+                        .watch("aspectRatio")
+                        .replace(":", " / "),
+                    }}
+                  />
+                )
+              )}
+            {images.length > 0 &&
+              images.map((image, index) => (
+                <div
+                  key={index}
+                  className={cn(
+                    "relative",
+                    images.length === 1 && "col-span-2"
+                  )}
+                  onClick={() => setSelected(selected === image ? null : image)}
+                  onContextMenu={(e) => e.preventDefault()}
+                  role="button"
+                >
+                  <div
                     className={cn(
-                      "relative",
-                      images.length === 1 && "col-span-2"
+                      "relative rounded overflow-hidden ring-2 ring-offset-2 ring-transparent",
+                      selected === image && "ring-primary"
                     )}
-                    onClick={() =>
-                      setSelected(selected === image ? null : image)
-                    }
-                    onContextMenu={(e) => e.preventDefault()}
-                    role="button"
                   >
-                    <div
-                      className={cn(
-                        "relative rounded overflow-hidden ring-2 ring-offset-2 ring-transparent",
-                        selected === image && "ring-primary"
-                      )}
-                    >
-                      <img
-                        src={image.output}
-                        alt={`Generated image ${index + 1}`}
-                        draggable="false"
-                        onDragStart={(e) => e.preventDefault()}
-                      />
-                    </div>
-                    <div
-                      className="absolute inset-0 w-full h-full"
-                      onContextMenu={(e) => e.preventDefault()}
-                    ></div>
-                    {!image.isPreview && (
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <span className="absolute top-2 right-2 inline-flex justify-center items-center bg-black/50 rounded-full">
-                            <UpscaleIcon className="text-white h-8 w-8" />
-                          </span>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>
-                            <b>Upscaled</b>
-                          </p>
-                        </TooltipContent>
-                      </Tooltip>
-                    )}
+                    <img
+                      src={image.output}
+                      alt={`Generated image ${index + 1}`}
+                      draggable="false"
+                      onDragStart={(e) => e.preventDefault()}
+                    />
                   </div>
-                ))}
-            </div>
+                  <div
+                    className="absolute inset-0 w-full h-full"
+                    onContextMenu={(e) => e.preventDefault()}
+                  ></div>
+                  {!image.isPreview && (
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <span className="absolute top-2 right-2 inline-flex justify-center items-center bg-black/50 rounded-full">
+                          <UpscaleIcon className="text-white h-8 w-8" />
+                        </span>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>
+                          <b>Upscaled</b>
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  )}
+                </div>
+              ))}
           </div>
         </div>
       </div>

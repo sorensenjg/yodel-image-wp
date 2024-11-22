@@ -11,7 +11,12 @@ export function IssueButton() {
   return (
     <Tooltip>
       <TooltipTrigger asChild>
-        <Button variant="ghost" size="icon-xs" asChild>
+        <Button
+          className="hidden sm:inline-flex"
+          variant="ghost"
+          size="icon-xs"
+          asChild
+        >
           <Link
             to="https://github.com/sorensenjg/yodel-image/issues"
             target="_blank"

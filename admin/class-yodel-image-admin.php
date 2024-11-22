@@ -59,6 +59,9 @@ class Yodel_Image_Admin {
 
 		add_action( 'admin_menu', array( $this, 'register_admin_menu' ) );
         add_action( 'wp_ajax_yodel_image_update_options', array( $this, 'update_options' ) ); 
+		add_action( 'wp_enqueue_media', function() {
+			add_action( 'admin_print_footer_scripts', array( $this, 'media_content_template' ), 11 );
+		} ); 
 
 	} 
 
@@ -104,6 +107,8 @@ class Yodel_Image_Admin {
 		 * class.
 		 */
 
+		//  wp_enqueue_media(); 
+
 		$build_dir = plugin_dir_path(__DIR__) . 'build/';
         $build_url = plugins_url('build/', __DIR__);
 
@@ -114,7 +119,7 @@ class Yodel_Image_Admin {
         $asset_file = file_exists($build_dir . 'index.asset.php') ? include($build_dir . 'index.asset.php') : null;
         
         $files = scandir($build_dir);
-        foreach ($files as $file) {
+        foreach ($files as $file) { 
             if ($file === '.' || $file === '..') continue;
 
             $file_path = $build_dir . $file;
@@ -176,7 +181,7 @@ class Yodel_Image_Admin {
 
 	public function admin_menu_root_html() { 
 		?>
-		<div id="yodel-image-admin"></div>  	 
+		<div id="yodel-image-admin" class="yodel-image"></div>   	 
 		<?php 
 	} 
 
@@ -192,5 +197,13 @@ class Yodel_Image_Admin {
 
 		wp_send_json_success( array( 'message' => 'Options updated successfully' ) );
     }
+
+	public function media_content_template() { 
+		?> 
+		<script type="text/html" id="tmpl-yodel-image-media-content">  
+			<!-- <# console.log(data); #> --> 
+		</script>
+		<?php
+	}
 
 }

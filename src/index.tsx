@@ -4,6 +4,7 @@ import Admin from "./admin";
 import Media from "./media";
 import type { Config, Settings } from "@/types";
 
+declare const wp: any;
 declare global {
   interface Window {
     yodelImageAdmin: {
@@ -18,8 +19,9 @@ const rootId = yodelImageAdmin.config.rootId;
 let root: Root | null = null;
 
 const mountApp = (container: HTMLElement, component: React.ReactNode) => {
-  // if existing root, unmount first
-  unmountApp();
+  if (root) {
+    unmountApp();
+  }
 
   root = createRoot(container);
   root.render(component);
@@ -37,12 +39,22 @@ if (adminContainer) {
   mountApp(adminContainer, <Admin />);
 }
 
-document.addEventListener("yodelImageMedia:content:rendered", () => {
-  const mediaFrameContainer = document.getElementById("yodel-image-media");
-
-  if (mediaFrameContainer) {
-    mountApp(mediaFrameContainer, <Media />);
+document.addEventListener("yodel-image-select:content:rendered", () => {
+  const node = document.getElementById("yodel-image-select-media-content");
+  if (node) {
+    mountApp(node, <Media />);
   }
+});
+
+document.addEventListener("yodel-image-post:content:rendered", () => {
+  const node = document.getElementById("yodel-image-post-media-content");
+  if (node) {
+    mountApp(node, <Media />);
+  }
+});
+
+document.addEventListener("yodel-image-modal:closed", () => {
+  unmountApp();
 });
 
 window.addEventListener("beforeunload", () => {

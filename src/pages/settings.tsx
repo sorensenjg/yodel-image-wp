@@ -43,42 +43,50 @@ export function SettingsPage() {
   }
 
   return (
-    <div className="w-full h-full overflow-auto">
-      <div className="container flex flex-col items-start justify-between space-y-2 py-4 sm:flex-row sm:items-center sm:space-y-0 md:h-16">
-        <h2 className="text-lg font-semibold">Settings</h2>
-        <div className="ml-auto flex w-full space-x-2 sm:justify-end"></div>
-      </div>
-      <Separator />
-      <div className="container h-full py-6">
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="yodel_image_api_key"
-              render={({ field }) => (
-                <FormItem className="w-full max-w-md">
-                  <FormLabel>API Key</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormDescription className="prose">
-                    Retrieve your API key from your Yodel{" "}
-                    <a href={`${window.yodelImageAdmin.config.apiUrl}/app`}>
-                      account settings
-                    </a>{" "}
-                    or{" "}
-                    <a href={`${window.yodelImageAdmin.config.apiUrl}/signup`}>
-                      create an account
-                    </a>{" "}
-                    to obtain one.
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormButton>Save</FormButton>
-          </form>
-        </Form>
+    <div className="h-full overflow-hidden">
+      <div className="flex flex-col h-full overflow-hidden">
+        <div className="container p-0">
+          <div className="container px-5 flex justify-between items-center gap-2 py-4">
+            <h2 className="text-lg font-semibold whitespace-nowrap">
+              Settings
+            </h2>
+            <div className="ml-auto flex space-x-2"></div>
+          </div>
+        </div>
+        <Separator />
+        <div className="container flex-1 py-6 overflow-auto">
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <FormField
+                control={form.control}
+                name="yodel_image_api_key"
+                render={({ field }) => (
+                  <FormItem className="w-full max-w-md">
+                    <FormLabel>API Key</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormDescription className="prose">
+                      Retrieve your API key from your Yodel{" "}
+                      <a href={`${window.yodelImageAdmin.config.apiUrl}/app`}>
+                        account settings
+                      </a>{" "}
+                      or{" "}
+                      <a
+                        href={`${window.yodelImageAdmin.config.apiUrl}/signup`}
+                      >
+                        create an account
+                      </a>{" "}
+                      to obtain one.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormButton>Save</FormButton>
+            </form>
+          </Form>
+        </div>
       </div>
     </div>
   );

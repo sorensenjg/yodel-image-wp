@@ -4,6 +4,7 @@ import { useImages } from "@/lib/wordpress";
 import { Separator } from "@/components/ui/separator";
 import { ImageCard } from "@/components/image-card";
 import { ImageDetails } from "@/components/image-details";
+// import { GenerateMetadata2 } from "@/components/generate-metadata";
 import type { Image } from "@/types";
 
 export function GalleryPage() {
@@ -38,14 +39,26 @@ export function GalleryPage() {
 
   return (
     <div className="relative flex flex-col h-full overflow-hidden">
-      <div className="container flex flex-col items-start justify-between space-y-2 py-4 sm:flex-row sm:items-center sm:space-y-0 md:h-16">
-        <h2 className="text-lg font-semibold">Gallery</h2>
-        <div className="ml-auto flex w-full space-x-2 sm:justify-end">
-          {/* Additional buttons or controls can be added here */}
+      <div className="container p-0">
+        <div className="container px-5 flex justify-between items-center gap-2 py-4">
+          <h2 className="text-lg font-semibold whitespace-nowrap">Gallery</h2>
+          <div className="ml-auto flex space-x-2">
+            {/* <GenerateMetadata2
+              images={[]}
+              // image={image}
+              // services={[SERVICES.title]}
+              // buttonProps={{
+              //   variant: "ghost",
+              // }}
+              // onComplete={(value) => {
+              //   console.log(value);
+              // }}
+            /> */}
+          </div>
         </div>
       </div>
       <Separator />
-      <div className="flex-1 container flex overflow-auto">
+      <div className="flex-1 container px-5 flex overflow-auto">
         <article className="flex-1">
           <div className="pt-6 pb-24">
             <ul className="flex-1 grid grid-cols-2 gap-4 overflow-y-auto p-1 sm:grid-cols-[repeat(auto-fill,minmax(200px,1fr))]">

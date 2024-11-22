@@ -29,33 +29,53 @@
    * practicing this, we should strive to set a better example in our own work.
    */
 
-  $(function () {
-    const Frame = wp.media.view.MediaFrame.Select;
+  // https://atimmer.github.io/wordpress-jsdoc/wp.media.html
+  // https://www.ibenic.com/extending-wordpress-media-uploader-custom-tab/
+  // https://annaschneider.me/blog/adding-custom-content-with-javascript-to-wordpress-media-modals/
 
-    wp.media.view.MediaFrame.Select = Frame.extend({
+  $(function () {
+    if (wp.media) {
+      const SelectFrame = wp.media.view.MediaFrame.Select;
+      wp.media.view.MediaFrame.Select = yodelImageExtendMediaFrame(
+        SelectFrame,
+        "yodel-image-select"
+      );
+
+      const PostFrame = wp.media.view.MediaFrame.Post;
+      wp.media.view.MediaFrame.Post = yodelImageExtendMediaFrame(
+        PostFrame,
+        "yodel-image-post"
+      );
+    }
+  });
+
+  function yodelImageExtendMediaFrame(Frame, id) {
+    return Frame.extend({
       initialize: function () {
         Frame.prototype.initialize.apply(this, arguments);
 
-        const YodelImageState = wp.media.controller.State.extend({
-          defaults: _.defaults(
-            {
-              id: "yodel_image",
-              title: `Yodel Image`,
-              routerName: "yodel_image",
-              content: "yodel_image",
-              priority: 100,
-            },
-            wp.media.controller.State.prototype.defaults
-          ),
-          // insert: function () {
-          //   console.log("Inserted Yodel Image:", this);
-          //   this.frame.close();
-          // },
-        });
+        // this.states.add({
+        //   id: "yodel_image",
+        // });
 
-        this.states.add([new YodelImageState()]);
+        this.on(
+          "open",
+          function () {
+            const event = new CustomEvent(`${id}:content:rendered`);
+            document.dispatchEvent(event);
+          },
+          this
+        );
 
-        // Handle the content rendering for the new tab
+        this.on(
+          "close",
+          function () {
+            const event = new CustomEvent("yodel-image-modal:closed");
+            document.dispatchEvent(event);
+          },
+          this
+        );
+
         this.on(
           "content:render:yodel_image",
           this.renderYodelImageContent,
@@ -73,24 +93,11 @@
           },
         });
       },
-      // browseContent: function (contentView) {
-      //   Frame.prototype.browseContent.call(this, contentView);
-
-      //   // if (activeTab === "yodel_image") {
-      //   //   const yodelImageContent = new wp.media.view.YodelImageTabContent();
-      //   //   this.content.set(yodelImageContent);
-      //   // } else {
-      //   //   Frame.prototype.browseContent.apply(this, arguments);
-      //   // }
-
-      //   console.log("browseContent:", contentView);
-      // },
       renderYodelImageContent: function () {
-        // Define the view for Yodel Image content
         const YodelImageView = wp.media.View.extend({
-          id: "yodel-image-media",
-          className: "yodel-image-media-content",
-          template: wp.template("yodel-image-media"),
+          id: `${id}-media-content`,
+          className: "yodel-image",
+          template: wp.template("yodel-image-media-content"),
           attributes: {
             tabindex: "0", // Allows the element to receive focus
           },
@@ -105,14 +112,25 @@
           render: function () {
             wp.media.View.prototype.render.apply(this, arguments);
 
-            // Set focus to the view to capture keyboard events
-            this.$el.focus();
+            // Generate HTML using the template and the data
+            // this.$el.html(
+            //   this.template({
+            //     frame: "Select",
+            //   })
+            // );
 
-            // Dispatch the custom event after rendering
-            setTimeout(() => {
-              const event = new CustomEvent("yodelImageMedia:content:rendered");
+            // Delay the focus to ensure the element is rendered and attached
+            requestAnimationFrame(() => {
+              if (this.el) {
+                this.el.focus();
+              }
+            });
+
+            // Dispatch your custom event when the media frame closes
+            requestAnimationFrame(() => {
+              const event = new CustomEvent(`${id}:content:rendered`);
               document.dispatchEvent(event);
-            }, 200);
+            });
 
             return this;
           },
@@ -125,10 +143,5 @@
         this.content.set(yodelView);
       },
     });
-
-    // Add a custom template
-    $("body #wpfooter").after(`
-      <script type="text/html" id="tmpl-yodel-image-media"></script>   
-    `);
-  });
+  }
 })(jQuery);
