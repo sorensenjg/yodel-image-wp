@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { ButtonProps } from "@/components/ui/button";
 import {
   Tooltip,
@@ -37,13 +38,15 @@ export function CreditConfirmDialog({
   services = [],
   onConfirm,
 }: CreditConfirmDialogProps) {
+  const [open, setOpen] = useState(!children);
+
   const handleConfirm = () => {
     onConfirm();
   };
 
   return (
     <TooltipProvider>
-      <AlertDialog>
+      <AlertDialog open={open} onOpenChange={setOpen}>
         <Tooltip>
           <AlertDialogTrigger asChild>
             <TooltipTrigger asChild>{children}</TooltipTrigger>

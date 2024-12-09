@@ -116,14 +116,22 @@ export async function updateImage(id: number, data: any) {
   }
 }
 
-export async function updateOptions(data: { [key: string]: string | Blob }) {
+export async function updateOptions(data: { [key: string]: string | boolean }) {
   const { ajaxUrl, ajaxNonce } = config;
 
   const formData = new FormData();
   formData.append("action", "yodel_image_update_options");
   formData.append("nonce", ajaxNonce);
 
-  Object.keys(data).forEach((key) => formData.append(key, data[key]));
+  Object.keys(data).forEach((key) => {
+    const value = data[key];
+
+    if (typeof value === "boolean") {
+      formData.append(key, value.toString());
+    } else {
+      formData.append(key, value);
+    }
+  });
 
   try {
     const response = await axios.post(ajaxUrl, formData, {

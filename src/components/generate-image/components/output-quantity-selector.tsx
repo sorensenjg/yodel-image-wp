@@ -14,14 +14,14 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 
-export function OutputQualitySelector() {
+export function OutputQuantitySelector() {
   const form = useFormContext();
 
   if (!form) {
     return null;
   }
 
-  const value = form.watch("outputQuality");
+  const value = form.watch("outputQuantity");
 
   return (
     <div className="grid gap-2 pt-2">
@@ -29,25 +29,26 @@ export function OutputQualitySelector() {
         <HoverCardTrigger asChild>
           <div className="grid gap-4">
             <div className="flex items-center justify-between">
-              <Label htmlFor="maxlength">Output Quality</Label>
+              <Label htmlFor="maxlength">Output Quantity</Label>
               <span className="w-12 rounded-md border border-transparent px-2 py-0.5 text-right text-sm text-muted-foreground hover:border-border">
                 {value}
               </span>
             </div>
             <FormField
               control={form.control}
-              name="outputQuality"
+              name="outputQuantity"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="sr-only">Output Format</FormLabel>
+                  <FormLabel className="sr-only">Output Quantity</FormLabel>
                   <FormControl>
                     <Slider
                       className="[&_[role=slider]]:h-4 [&_[role=slider]]:w-4"
-                      step={10}
-                      max={100}
+                      step={1}
+                      min={1}
+                      max={4}
                       value={[field.value]}
                       onValueChange={(value) => field.onChange(value[0])}
-                      aria-label="Output quality"
+                      aria-label="Output quantity"
                     />
                   </FormControl>
                   <FormMessage />
@@ -61,8 +62,7 @@ export function OutputQualitySelector() {
           className="w-[260px] text-sm"
           side="left"
         >
-          The quality of the generated images. 0 is the lowest quality and 100
-          is the highest.
+          The number of images to generate at once.
         </HoverCardContent>
       </HoverCard>
     </div>

@@ -1,4 +1,3 @@
-import { Link } from "react-router-dom";
 import { BugIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,16 +16,17 @@ export function IssueButton() {
           size="icon-xs"
           asChild
         >
-          <Link
-            to="https://github.com/sorensenjg/yodel-image/issues"
+          <a
+            href="mailto:support@useyodel.com"
             target="_blank"
+            rel="noopener noreferrer"
           >
             <span className="sr-only">Issues</span>
             <BugIcon aria-hidden="true" className="w-4 h-4" />
-          </Link>
+          </a>
         </Button>
       </TooltipTrigger>
-      <TooltipContent>
+      <TooltipContent side="bottom">
         <p>Report an issue</p>
       </TooltipContent>
     </Tooltip>

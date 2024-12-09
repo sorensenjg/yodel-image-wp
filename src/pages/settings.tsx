@@ -2,9 +2,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { toast } from "sonner";
+import { validateApiKey } from "@/lib/api";
 import { updateOptions } from "@/lib/wordpress";
 import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
 import {
   Form,
   FormControl,
@@ -16,10 +18,13 @@ import {
   FormButton,
 } from "@/components/ui/form";
 
+const { config, settings } = window.yodelImageAdmin;
+
 const formSchema = z.object({
-  yodel_image_api_key: z.string({
+  yodel_api_key: z.string({
     required_error: "Yodel API key is required.",
   }),
+  yodel_svg_support: z.boolean(),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -28,15 +33,29 @@ export function SettingsPage() {
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      yodel_image_api_key: window.yodelImageAdmin.settings.apiKey,
+      yodel_api_key: settings.apiKey,
+      yodel_svg_support: settings.svgSupport,
     },
   });
 
   async function onSubmit(values: FormData) {
+    if (values.yodel_api_key !== settings.apiKey) {
+      const isValid = await validateApiKey(values.yodel_api_key);
+
+      if (!isValid) {
+        toast.error("Invalid API key");
+        return;
+      }
+    }
+
     const { success } = await updateOptions(values);
 
     if (success) {
       toast.success("Successfully updated settings");
+
+      if (values.yodel_api_key !== settings.apiKey) {
+        window.location.reload();
+      }
     } else {
       toast.error("Failed to update settings");
     }
@@ -56,30 +75,61 @@ export function SettingsPage() {
         <Separator />
         <div className="container flex-1 py-6 overflow-auto">
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
               <FormField
                 control={form.control}
-                name="yodel_image_api_key"
+                name="yodel_api_key"
                 render={({ field }) => (
-                  <FormItem className="w-full max-w-md">
-                    <FormLabel>API Key</FormLabel>
+                  <FormItem className="grid grid-cols-2 gap-8 w-full max-w-2xl">
+                    <div className="space-y-0.5">
+                      <FormLabel className="text-base">API Key</FormLabel>
+                      <FormDescription className="prose">
+                        Retrieve your API key from your Yodel{" "}
+                        <a
+                          href={`${config.apiUrl}/app`}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          account settings
+                        </a>{" "}
+                        or{" "}
+                        <a
+                          href={`${config.apiUrl}/signup`}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          create an account
+                        </a>{" "}
+                        to obtain one.
+                      </FormDescription>
+                    </div>
                     <FormControl>
                       <Input {...field} />
                     </FormControl>
-                    <FormDescription className="prose">
-                      Retrieve your API key from your Yodel{" "}
-                      <a href={`${window.yodelImageAdmin.config.apiUrl}/app`}>
-                        account settings
-                      </a>{" "}
-                      or{" "}
-                      <a
-                        href={`${window.yodelImageAdmin.config.apiUrl}/signup`}
-                      >
-                        create an account
-                      </a>{" "}
-                      to obtain one.
-                    </FormDescription>
+
                     <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="yodel_svg_support"
+                render={({ field }) => (
+                  <FormItem className="grid grid-cols-2 gap-8 w-full max-w-2xl">
+                    <div className="space-y-0.5">
+                      <FormLabel className="text-base">SVG Support</FormLabel>
+                      <FormDescription className="prose">
+                        Enabling this option will allow SVG images to be
+                        uploaded to WordPress and allows you to use SVG image
+                        generation models.
+                      </FormDescription>
+                    </div>
+                    <FormControl>
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
                   </FormItem>
                 )}
               />

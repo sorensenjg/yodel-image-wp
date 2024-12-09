@@ -40,7 +40,7 @@ export function AspectRatioSelector() {
       render={({ field }) => (
         <FormItem>
           <FormLabel>Aspect Ratio</FormLabel>
-          <Select onValueChange={field.onChange} defaultValue={field.value}>
+          <Select value={field.value} onValueChange={field.onChange}>
             <FormControl>
               <SelectTrigger>
                 <SelectValue placeholder="Select an aspect ratio" />

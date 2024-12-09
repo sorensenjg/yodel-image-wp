@@ -1,10 +1,35 @@
-import { Toaster } from "@/components/ui/sonner";
 import { Separator } from "@/components/ui/separator";
 import { CreditMenu } from "@/components/credit-menu";
 import { GenerateImage } from "@/components/generate-image";
 import { Provider } from "./provider";
 
+const { config, settings } = window.yodelImageAdmin;
+const apiKey = settings.apiKey;
+
 export default function Media() {
+  if (!apiKey) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <p className="prose text-center">
+          Please enter your valid API key on the{" "}
+          <a href="/wp-admin/admin.php?page=yodel-image#/settings">
+            settings page
+          </a>
+          <br />
+          or{" "}
+          <a
+            href={`${config.apiUrl}/signup`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            create an account
+          </a>{" "}
+          to obtain one.
+        </p>
+      </div>
+    );
+  }
+
   return (
     <Provider>
       <div className="flex flex-col h-full overflow-hidden">

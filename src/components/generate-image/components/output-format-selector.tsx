@@ -34,7 +34,7 @@ export function OutputFormatSelector() {
       render={({ field }) => (
         <FormItem>
           <FormLabel>Output Format</FormLabel>
-          <Select onValueChange={field.onChange} defaultValue={field.value}>
+          <Select value={field.value} onValueChange={field.onChange}>
             <FormControl>
               <SelectTrigger>
                 <SelectValue placeholder="Select an output format" />

@@ -62,6 +62,7 @@ class Yodel_Image_Admin {
 		add_action( 'wp_enqueue_media', function() {
 			add_action( 'admin_print_footer_scripts', array( $this, 'media_content_template' ), 11 );
 		} ); 
+		add_filter('upload_mimes', array( $this, 'enable_svg_support' ));
 
 	} 
 
@@ -146,20 +147,24 @@ class Yodel_Image_Admin {
             }
         } 
 
+		$api_key = get_option('yodel_api_key', '');
+		$svg_support = get_option('yodel_svg_support', false);
+
         wp_localize_script($this->plugin_name . '-index', 'yodelImageAdmin', [ 
             'config' => array(
 				'version' 			=> $this->version,   
 				'rootId' 			=> 'yodel-image-admin', 
 				'apiUrl'			=> $this->api_url, 
 				'ajaxUrl' 			=> admin_url('admin-ajax.php'),     
-				'ajaxNonce' 		=> wp_create_nonce('yodel-image-nonce'),  
+				'ajaxNonce' 		=> wp_create_nonce('yodel-image-nonce'),   
 				'restUrl' 			=> esc_url(rest_url('wp/v2')),
 				'restNonce' 		=> wp_create_nonce('wp_rest'),
 				'stripePublicKey' 	=> $this->stripe_public_key,  
             ),
 			'settings' => array(
-				'apiKey'			=> get_option('yodel_image_api_key'),  
-			) 
+				'apiKey'			=> $api_key,   
+				'svgSupport'		=> $svg_support === 'true' ? true : false,  
+			)  
         ]);
 
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/yodel-image-admin.js', array( 'jquery', 'media-views' ), $this->version, true );
@@ -191,7 +196,7 @@ class Yodel_Image_Admin {
 		$options = $_POST; 
         unset($options['action'], $options['nonce']); 
 
-		foreach ( $options as $key => $value ) { 
+		foreach ( $options as $key => $value ) {
 			update_option( $key, $value );
 		}
 
@@ -205,5 +210,19 @@ class Yodel_Image_Admin {
 		</script>
 		<?php
 	}
+
+	public function enable_svg_support($mime_types){
+		$svg_support = get_option('yodel_svg_support', false);
+
+		if (!$svg_support) {
+			return $mime_types; 
+		} 
+
+		$mime_types = array_merge( $mime_types, array(
+			'svg' => 'image/svg',
+		) );  
+   
+		return $mime_types; 
+   	} 
 
 }

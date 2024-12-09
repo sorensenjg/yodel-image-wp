@@ -85,8 +85,9 @@ export function GenerateMetadata({
     const imageDataUrl = await convertImageUrlToDataUrl(image.source_url);
 
     const result = await mutation.mutateAsync({
+      model: "yorickvp/llava-13b",
       image: imageDataUrl,
-      cost: services.reduce((acc, service) => acc + service.cost, 0),
+      quantity: services.length,
     });
 
     onComplete?.(result);

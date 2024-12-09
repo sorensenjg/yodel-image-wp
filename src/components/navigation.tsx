@@ -4,51 +4,51 @@ import { cn } from "@/lib/utils";
 // import { Icons } from "@/components/icons"
 import {
   NavigationMenu,
-  NavigationMenuContent,
+  // NavigationMenuContent,
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
-  NavigationMenuTrigger,
+  // NavigationMenuTrigger,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 
-const components: { title: string; href: string; description: string }[] = [
-  {
-    title: "Alert Dialog",
-    href: "/docs/primitives/alert-dialog",
-    description:
-      "A modal dialog that interrupts the user with important content and expects a response.",
-  },
-  {
-    title: "Hover Card",
-    href: "/docs/primitives/hover-card",
-    description:
-      "For sighted users to preview content available behind a link.",
-  },
-  {
-    title: "Progress",
-    href: "/docs/primitives/progress",
-    description:
-      "Displays an indicator showing the completion progress of a task, typically displayed as a progress bar.",
-  },
-  {
-    title: "Scroll-area",
-    href: "/docs/primitives/scroll-area",
-    description: "Visually or semantically separates content.",
-  },
-  {
-    title: "Tabs",
-    href: "/docs/primitives/tabs",
-    description:
-      "A set of layered sections of content—known as tab panels—that are displayed one at a time.",
-  },
-  {
-    title: "Tooltip",
-    href: "/docs/primitives/tooltip",
-    description:
-      "A popup that displays information related to an element when the element receives keyboard focus or the mouse hovers over it.",
-  },
-];
+// const components: { title: string; href: string; description: string }[] = [
+//   {
+//     title: "Alert Dialog",
+//     href: "/docs/primitives/alert-dialog",
+//     description:
+//       "A modal dialog that interrupts the user with important content and expects a response.",
+//   },
+//   {
+//     title: "Hover Card",
+//     href: "/docs/primitives/hover-card",
+//     description:
+//       "For sighted users to preview content available behind a link.",
+//   },
+//   {
+//     title: "Progress",
+//     href: "/docs/primitives/progress",
+//     description:
+//       "Displays an indicator showing the completion progress of a task, typically displayed as a progress bar.",
+//   },
+//   {
+//     title: "Scroll-area",
+//     href: "/docs/primitives/scroll-area",
+//     description: "Visually or semantically separates content.",
+//   },
+//   {
+//     title: "Tabs",
+//     href: "/docs/primitives/tabs",
+//     description:
+//       "A set of layered sections of content—known as tab panels—that are displayed one at a time.",
+//   },
+//   {
+//     title: "Tooltip",
+//     href: "/docs/primitives/tooltip",
+//     description:
+//       "A popup that displays information related to an element when the element receives keyboard focus or the mouse hovers over it.",
+//   },
+// ];
 
 export function Navigation() {
   const pathname = useLocation().pathname;
@@ -115,7 +115,7 @@ export function Navigation() {
             )}
             asChild
           >
-            <Link to="/">Gallery</Link>
+            <Link to="/">Generate</Link>
           </NavigationMenuLink>
         </NavigationMenuItem>
         <NavigationMenuItem className="mb-0">
@@ -123,11 +123,11 @@ export function Navigation() {
             className={cn(
               navigationMenuTriggerStyle(),
               "h-12 outline-none rounded-none bg-transparent border-b-2 border-transparent hover:border-b-primary focus:outline-none focus:ring-0",
-              pathname === "/generate" && "border-b-primary"
+              pathname === "/gallery" && "border-b-primary"
             )}
             asChild
           >
-            <Link to="/generate">Generate</Link>
+            <Link to="/gallery">Gallery</Link>
           </NavigationMenuLink>
         </NavigationMenuItem>
         <NavigationMenuItem className="mb-0">
