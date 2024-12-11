@@ -108,7 +108,7 @@ class Yodel_Image_Admin {
 		 * class.
 		 */
 
-		//  wp_enqueue_media(); 
+		wp_enqueue_media(); 
 
 		$build_dir = plugin_dir_path(__DIR__) . 'build/';
         $build_url = plugins_url('build/', __DIR__);

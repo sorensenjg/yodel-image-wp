@@ -124,6 +124,7 @@ function InitialDisplay({
   focusPrompt: () => void;
   onComplete: (prompt: string) => void;
 }) {
+  const [loadingText, setLoadingText] = useState("Analyzing Image");
   const { data: credits, status: creditsStatus } = useCredits();
   const { data: services, status: servicesStatus } = useServices();
   const mutation = useGeneratePrompt();
@@ -135,6 +136,13 @@ function InitialDisplay({
     }
   );
   const imageValue = watch("image");
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoadingText("Generating Prompt");
+    }, 8000);
+    return () => clearTimeout(timer);
+  }, [formState.isSubmitting]);
 
   const onSubmit = async (values: any) => {
     const image = values.image;
@@ -175,7 +183,9 @@ function InitialDisplay({
     <div className="w-full h-full border border-dashed rounded">
       {formState.isSubmitting ? (
         <div className="flex items-center justify-center h-full">
-          <LoadingIcon className="h-8 w-8 animate-spin" />
+          <div className="text-xl font-bold inline-flex items-center gap-2">
+            <LoadingIcon className="h-8 w-8 animate-spin" /> {loadingText}
+          </div>
         </div>
       ) : (
         <>
