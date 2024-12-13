@@ -6,6 +6,8 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
+const { config } = window.yodelImageAdmin;
+
 export function IssueButton() {
   return (
     <Tooltip>
@@ -17,7 +19,7 @@ export function IssueButton() {
           asChild
         >
           <a
-            href="mailto:support@useyodel.com"
+            href={`${config.apiUrl}/contact?topic=product_support&product=yodel_image`}
             target="_blank"
             rel="noopener noreferrer"
           >
