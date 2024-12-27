@@ -218,7 +218,10 @@ export function useGenerateMetadata() {
   const mutation = useMutation({
     mutationFn: generateMetadata,
     onSuccess: () => {
-      client.invalidateQueries({ queryKey: ["credits"] });
+      // client.invalidateQueries({ queryKey: ["credits"] });
+      // client.invalidateQueries({ queryKey: ["images", 2] });
+      // client.resetQueries();
+      client.removeQueries();
     },
   });
 
