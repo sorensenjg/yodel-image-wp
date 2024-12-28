@@ -73,13 +73,14 @@ class Yodel_Image {
 		if ( defined( 'YODEL_IMAGE_VERSION' ) ) { 
 			$this->version = YODEL_IMAGE_VERSION;
 		} else {
-			$this->version = '1.0.0';
+			$this->version = '1.0.0'; 
 		}
 		$this->plugin_name = 'yodel-image';
 		$this->api_url = YODEL_IMAGE_API_URL;
 		$this->stripe_public_key = YODEL_STRIPE_PUBLIC_KEY; 
 
 		$this->load_dependencies();
+		$this->initialize_updater();
 		$this->set_locale();
 		$this->define_admin_hooks();
 		$this->define_public_hooks();
@@ -137,6 +138,12 @@ class Yodel_Image {
 
 	}
 
+	private function initialize_updater() {
+		// if( ! class_exists( 'Yodel_Image_Updater' ) ) {
+			new Yodel_Image_Updater( $this->get_plugin_name(), $this->get_version(), $this->api_url );
+		// }	   
+	}
+
 	/**
 	 * Define the locale for this plugin for internationalization.
 	 *
@@ -161,11 +168,7 @@ class Yodel_Image {
 	 * @since    1.0.0
 	 * @access   private
 	 */
-	private function define_admin_hooks() { 
-
-		if( ! class_exists( 'Yodel_Image_Updater' ) ) {
-			new Yodel_Image_Updater( $this->get_plugin_name(), $this->get_version(), $this->api_url );
-		}	   
+	private function define_admin_hooks() {  
 
 		$plugin_admin = new Yodel_Image_Admin( 
 			$this->get_plugin_name(), 
