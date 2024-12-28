@@ -59,9 +59,7 @@ class Yodel_Image_Admin {
 
 		add_action( 'admin_menu', array( $this, 'register_admin_menu' ) );
         add_action( 'wp_ajax_yodel_image_update_options', array( $this, 'update_options' ) ); 
-		add_action( 'wp_enqueue_media', function() {
-			add_action( 'admin_print_footer_scripts', array( $this, 'media_content_template' ), 11 );
-		} ); 
+		add_action('print_media_templates', array( $this, 'register_media_templates' )); 
 		add_filter('upload_mimes', array( $this, 'enable_svg_support' ));
 
 	} 
@@ -203,10 +201,12 @@ class Yodel_Image_Admin {
 		wp_send_json_success( array( 'message' => 'Options updated successfully' ) );
     }
 
-	public function media_content_template() { 
+	public function register_media_templates() { 
 		?> 
 		<script type="text/html" id="tmpl-yodel-image-media-content">  
-			<!-- <# console.log(data); #> --> 
+			<!-- <# console.log(data); #> -->	
+			<div class="media-frame-title" style="left: 0;"><h1>{{{data.title}}}</h1></div>
+			<div id="yodel-image-generator" class="media-frame-content yodel-image"></div>
 		</script>
 		<?php
 	}

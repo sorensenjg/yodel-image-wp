@@ -15,8 +15,47 @@
   display: none !important;
 }
 
+.yodel-image-button-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.yodel-image-button-group > * {
+  position: relative;
+  top: -3px;
+}
+
 #yodel-image-select-media-content,
-#yodel-image-post-media-content {
+#yodel-image-post-media-content,
+.media-frame-content .image-editor,
+.media-frame-content .image-editor #yodel-image-editor {
   height: 100% !important;
   overflow: hidden !important;
+}
+
+.yodel-image-media-content {
+  display: flex;
+  flex-direction: column;
+  height: 100% !important;
+  overflow: hidden !important;
+}
+
+.yodel-image-media-content .media-frame-title {
+  position: relative;
+  left: 0 !important;
+}
+
+.yodel-image-media-content .media-frame-content {
+  position: relative;
+  top: 0;
+  left: 0;
+  flex: 1;
+  overflow: auto;
+}
+
+@media only screen and (max-width: 480px) {
+  .media-modal-frame .media-frame-content {
+    top: 40px;
+  }
 }

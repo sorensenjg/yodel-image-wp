@@ -19,7 +19,6 @@ import {
   useUpscaleImage,
   useGeneratePrompt,
 } from "@/lib/api";
-import { saveImage } from "@/lib/wordpress";
 import {
   generateSeedFromPrompt,
   generateIterationSeed,
@@ -316,7 +315,11 @@ const defaultValues: FormData = {
   outputQuantity: 4,
 };
 
-export function GenerateImage() {
+interface GeneratorProps {
+  onSave: (image: OutputImage) => void;
+}
+
+export function Generator({ onSave }: GeneratorProps) {
   const { data: credits, status: creditsStatus } = useCredits();
   const { data: services, status: servicesStatus } = useServices();
   const generateMutation = useGenerateImage();
@@ -538,7 +541,7 @@ export function GenerateImage() {
       toast.success("Image upscaled successfully");
 
       // Automatically save the upscaled image
-      await handleSave(upscaledImage);
+      // await handleSave(upscaledImage);
     } catch (error: any) {
       console.error("Error upscaling image:", error);
       const reason = error.response?.data.error
@@ -547,37 +550,6 @@ export function GenerateImage() {
       toast.error(`Failed to upscale image: ${reason}`);
     }
   }
-
-  const handleSave = async (image: OutputImage) => {
-    if (!image) {
-      toast.error("No image available to save");
-      return;
-    }
-
-    try {
-      const blob = image.output;
-      const filename = `${nanoid()}.${image.input.outputFormat}`;
-      const file = new File([blob], filename, { type: blob.type });
-
-      const saveResponse = await saveImage(file, {
-        yodel_image_input: JSON.stringify(image.input),
-        yodel_image_seed: image.seed,
-      });
-
-      if (!saveResponse.id) {
-        throw new Error("Invalid response saving image");
-      }
-
-      // const uploadUrl = new URL("/wp-admin/upload.php", window.location.origin);
-      // uploadUrl.searchParams.append("item", saveResponse.id.toString());
-      // : <a href="${uploadUrl.toString()}" target="_blank" rel="noopener noreferrer">View</a>
-
-      toast.success(`Image saved successfully`);
-    } catch (error) {
-      console.error("Error saving image:", error);
-      toast.error("Uh oh! Something went wrong while saving the image");
-    }
-  };
 
   const handleReset = () => {
     form.reset(defaultValues);
@@ -825,7 +797,7 @@ export function GenerateImage() {
               <Button
                 type="button"
                 className="w-full"
-                onClick={() => handleSave(selected)}
+                onClick={() => onSave(selected)}
               >
                 Save Image
               </Button>
@@ -847,7 +819,9 @@ export function GenerateImage() {
               onComplete={(prompt) => form.setValue("prompt", prompt)}
             />
           )}
-          <div className={`grid grid-cols-2 gap-4`}>
+          <div
+            className={`grid gap-4 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3`}
+          >
             {form.formState.isSubmitting &&
               Array.from({ length: skeletons }).map((_, index) => (
                 <Skeleton
