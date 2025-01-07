@@ -3,6 +3,23 @@
  * included in this file.
  */
 
+.wp-admin[class*="yodel-image"] #wpwrap {
+  height: calc(100vh - var(--wp-admin--admin-bar--height)) !important;
+  overflow: hidden !important;
+}
+
+.wp-admin[class*="yodel-image"] #adminmenuwrap {
+  height: calc(100vh - var(--wp-admin--admin-bar--height)) !important;
+  overflow: hidden !important;
+}
+
+.wp-admin[class*="yodel-image"] #adminmenu {
+  height: 100% !important;
+  overflow-y: scroll !important;
+  padding-right: 17px !important;
+  box-sizing: content-box !important;
+}
+
 .wp-admin[class*="yodel-image"] #wpcontent {
   padding: 0 !important;
 }
@@ -15,8 +32,53 @@
   display: none !important;
 }
 
-#yodel-image-select-media-content,
-#yodel-image-post-media-content {
-  height: 100% !important;
-  overflow: hidden !important;
+.yodel-image-button-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.yodel-image-button-group > * {
+  position: relative;
+  top: -3px;
+}
+
+.image-editor,
+[id^="image-editor-"],
+#yodel-image-editor,
+#yodel-image-generator {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.image-editor {
+  min-height: 600px;
+  max-height: 100%;
+  aspect-ratio: 5 / 4;
+}
+
+form[id="post"] .image-editor {
+  max-height: 80vh;
+}
+
+.yodel-image-generator-frame {
+  position: relative;
+}
+
+.yodel-image-generator-frame .media-frame-content {
+  overflow: visible;
+}
+
+.yodel-image-generator-frame .yodel-image-credit-menu {
+  position: absolute;
+  top: -42px;
+  right: 72px;
+  display: none !important;
+}
+
+@media only screen and (min-width: 481px) {
+  .yodel-image-generator-frame .yodel-image-credit-menu {
+    display: flex !important;
+  }
 }

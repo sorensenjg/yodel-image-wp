@@ -12,7 +12,7 @@ import { IssueButton } from "@/components/issue-button";
 import { GalleryPage } from "@/pages/gallery";
 import { GeneratePage } from "@/pages/generate";
 import { SettingsPage } from "@/pages/settings";
-import { Provider } from "./provider";
+import { Provider } from "@/components/provider";
 
 const { config, settings } = window.yodelImageAdmin;
 const apiKey = settings.apiKey;

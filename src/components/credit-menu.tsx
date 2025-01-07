@@ -1,9 +1,14 @@
+import { cn } from "@/lib/utils";
 import { useCredits } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 
 const { config } = window.yodelImageAdmin;
 
-export function CreditMenu() {
+interface CreditMenuProps {
+  className: string;
+}
+
+export function CreditMenu({ className }: CreditMenuProps) {
   const { data: credits, status } = useCredits();
 
   if (status === "pending") {
@@ -15,7 +20,7 @@ export function CreditMenu() {
   queryParams.set("cancel_url", window.location.href);
 
   return (
-    <div className="flex items-center gap-3">
+    <div className={cn("flex items-center gap-3", className)}>
       <p>
         <span className="hidden sm:inline">Credits:</span> {credits}
       </p>

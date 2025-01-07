@@ -21,6 +21,8 @@ import {
 import { CreditMenu } from "@/components/credit-menu";
 import type { Image } from "@/types";
 
+const { config, settings } = window.yodelImageAdmin;
+
 interface GenerateMetadataButtonProps extends ButtonProps {
   services: {
     name: string;
@@ -88,6 +90,7 @@ export function GenerateMetadata({
       model: "yorickvp/llava-13b",
       image: imageDataUrl,
       quantity: services.length,
+      language: settings.language,
     });
 
     onComplete?.(result);

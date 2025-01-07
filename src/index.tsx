@@ -4,9 +4,13 @@ import Admin from "./admin";
 import Media from "./media";
 import type { Config, Settings } from "@/types";
 
+import { EditorHandler } from "@/lib/editor-handler";
+import { GeneratorHandler } from "@/lib/generator-handler";
+
 declare const wp: any;
 declare global {
   interface Window {
+    imageEdit: any;
     yodelImageAdmin: {
       config: Config;
       settings: Settings;
@@ -60,3 +64,6 @@ document.addEventListener("yodel-image-modal:closed", () => {
 window.addEventListener("beforeunload", () => {
   unmountApp();
 });
+
+new EditorHandler();
+new GeneratorHandler();

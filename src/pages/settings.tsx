@@ -8,6 +8,13 @@ import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   Form,
   FormControl,
   FormField,
@@ -17,6 +24,7 @@ import {
   FormMessage,
   FormButton,
 } from "@/components/ui/form";
+import { LANGUAGES } from "@/config";
 
 const { config, settings } = window.yodelImageAdmin;
 
@@ -24,6 +32,7 @@ const formSchema = z.object({
   yodel_api_key: z.string({
     required_error: "Yodel API key is required.",
   }),
+  yodel_language: z.string(),
   yodel_svg_support: z.boolean(),
 });
 
@@ -34,12 +43,13 @@ export function SettingsPage() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       yodel_api_key: settings.apiKey,
+      yodel_language: settings.language,
       yodel_svg_support: settings.svgSupport,
     },
   });
 
   async function onSubmit(values: FormData) {
-    if (values.yodel_api_key !== settings.apiKey) {
+    if (values.yodel_api_key && values.yodel_api_key !== settings.apiKey) {
       const isValid = await validateApiKey(values.yodel_api_key);
 
       if (!isValid) {
@@ -106,6 +116,43 @@ export function SettingsPage() {
                     <FormControl>
                       <Input {...field} />
                     </FormControl>
+
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="yodel_language"
+                render={({ field }) => (
+                  <FormItem className="grid grid-cols-2 gap-8 w-full max-w-2xl">
+                    <div className="space-y-0.5">
+                      <FormLabel className="text-base">Language</FormLabel>
+                      <FormDescription className="prose">
+                        This will generate image metadata in the selected
+                        language.
+                      </FormDescription>
+                    </div>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a language" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {LANGUAGES.map((language) => (
+                          <SelectItem
+                            key={language.value}
+                            value={language.value}
+                          >
+                            {language.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
 
                     <FormMessage />
                   </FormItem>

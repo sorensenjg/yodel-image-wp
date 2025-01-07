@@ -1,7 +1,11 @@
+import { nanoid } from "nanoid";
+import { toast } from "sonner";
+import { saveImage } from "@/lib/wordpress";
 import { Separator } from "@/components/ui/separator";
 import { CreditMenu } from "@/components/credit-menu";
-import { GenerateImage } from "@/components/generate-image";
-import { Provider } from "./provider";
+import { Generator } from "@/components/generator";
+import { Provider } from "@/components/provider";
+import type { OutputImage } from "@/types";
 
 const { config, settings } = window.yodelImageAdmin;
 const apiKey = settings.apiKey;
@@ -45,7 +49,36 @@ export default function Media() {
           <Separator />
         </div>
         <div className="container px-5 flex-1 py-6 overflow-auto">
-          <GenerateImage />
+          <Generator
+            onSave={async (image: OutputImage) => {
+              if (!image) {
+                toast.error("No image available to save");
+                return;
+              }
+
+              try {
+                const blob = image.output;
+                const filename = `${nanoid()}.${image.input.outputFormat}`;
+                const file = new File([blob], filename, { type: blob.type });
+
+                const response = await saveImage(file, {
+                  yodel_image_input: JSON.stringify(image.input),
+                  yodel_image_seed: image.seed,
+                });
+
+                if (!response.id) {
+                  throw new Error("Invalid response saving image");
+                }
+
+                toast.success(`Image saved successfully`);
+              } catch (error) {
+                console.error("Error saving image:", error);
+                toast.error(
+                  "Uh oh! Something went wrong while saving the image"
+                );
+              }
+            }}
+          />
         </div>
       </div>
     </Provider>
