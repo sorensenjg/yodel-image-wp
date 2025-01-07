@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 const { config } = window.yodelImageAdmin;
 
 interface CreditMenuProps {
-  className: string;
+  className?: string;
 }
 
 export function CreditMenu({ className }: CreditMenuProps) {
