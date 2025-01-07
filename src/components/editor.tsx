@@ -115,8 +115,6 @@ export function Editor(props: any) {
     return [...toolbar];
   };
 
-  // console.log(props);
-
   return (
     <PinturaEditor
       ref={editorRef}

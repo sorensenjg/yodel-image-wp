@@ -186,15 +186,17 @@ export async function generateMetadata({
   model,
   image,
   quantity,
+  language = "en",
 }: {
   model: string;
   image: string;
   quantity: number;
+  language: string;
 }) {
   try {
     const response = await axios.post(
       `${config.apiUrl}/api/v1/generate/metadata`,
-      { model, image, quantity },
+      { model, image, quantity, language },
       {
         headers: {
           Authorization: `Bearer ${settings.apiKey}`,

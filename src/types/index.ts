@@ -11,6 +11,7 @@ export type Config = {
 
 export type Settings = {
   apiKey: string;
+  language: string;
   svgSupport: boolean;
 };
 

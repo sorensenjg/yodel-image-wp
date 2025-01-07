@@ -4,8 +4,8 @@ import Admin from "./admin";
 import Media from "./media";
 import type { Config, Settings } from "@/types";
 
+import { EditorHandler } from "@/lib/editor-handler";
 import { GeneratorHandler } from "@/lib/generator-handler";
-import { EditImageHandler } from "@/lib/edit-image-handler";
 
 declare const wp: any;
 declare global {
@@ -65,5 +65,5 @@ window.addEventListener("beforeunload", () => {
   unmountApp();
 });
 
+new EditorHandler();
 new GeneratorHandler();
-new EditImageHandler();

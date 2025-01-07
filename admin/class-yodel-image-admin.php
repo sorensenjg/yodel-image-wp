@@ -146,6 +146,7 @@ class Yodel_Image_Admin {
         } 
 
 		$api_key = get_option('yodel_api_key', '');
+		$language = get_option('yodel_language', 'en'); 
 		$svg_support = get_option('yodel_svg_support', false);
 
         wp_localize_script($this->plugin_name . '-index', 'yodelImageAdmin', [ 
@@ -161,7 +162,9 @@ class Yodel_Image_Admin {
             ),
 			'settings' => array(
 				'apiKey'			=> $api_key,   
+				'language'			=> $language,
 				'svgSupport'		=> $svg_support === 'true' ? true : false,  
+				
 			)  
         ]);
 
@@ -207,6 +210,18 @@ class Yodel_Image_Admin {
 			<!-- <# console.log(data); #> -->	
 			<div class="media-frame-title" style="left: 0;"><h1>{{{data.title}}}</h1></div>
 			<div id="yodel-image-generator" class="media-frame-content yodel-image"></div>
+		</script>
+
+		<script type="text/html" id="tmpl-yodel-image-generator">
+			<!-- <div class="edit-media-header">
+				<button class="left dashicons"><span class="screen-reader-text">Edit previous media item</span></button>
+				<button class="right dashicons"><span class="screen-reader-text">Edit next media item</span></button>
+				<button type="button" class="media-modal-close"><span class="media-modal-icon"><span class="screen-reader-text">Close dialog</span></span></button>
+			</div> -->
+			<div class="media-frame-title"><h1>{{{data.title}}}</h1></div> 
+			<div class="media-frame-content"> 
+				<div id="yodel-image-generator" class="yodel-image"></div>
+			</div>
 		</script>
 		<?php
 	}

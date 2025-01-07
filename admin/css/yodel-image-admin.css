@@ -3,6 +3,23 @@
  * included in this file.
  */
 
+.wp-admin[class*="yodel-image"] #wpwrap {
+  height: calc(100vh - var(--wp-admin--admin-bar--height)) !important;
+  overflow: hidden !important;
+}
+
+.wp-admin[class*="yodel-image"] #adminmenuwrap {
+  height: calc(100vh - var(--wp-admin--admin-bar--height)) !important;
+  overflow: hidden !important;
+}
+
+.wp-admin[class*="yodel-image"] #adminmenu {
+  height: 100% !important;
+  overflow-y: scroll !important;
+  padding-right: 17px !important;
+  box-sizing: content-box !important;
+}
+
 .wp-admin[class*="yodel-image"] #wpcontent {
   padding: 0 !important;
 }
@@ -26,36 +43,42 @@
   top: -3px;
 }
 
-#yodel-image-select-media-content,
-#yodel-image-post-media-content,
-.media-frame-content .image-editor,
-.media-frame-content .image-editor #yodel-image-editor {
-  height: 100% !important;
-  overflow: hidden !important;
+.image-editor,
+[id^="image-editor-"],
+#yodel-image-editor,
+#yodel-image-generator {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
 }
 
-.yodel-image-media-content {
-  display: flex;
-  flex-direction: column;
-  height: 100% !important;
-  overflow: hidden !important;
+.image-editor {
+  min-height: 600px;
+  max-height: 100%;
+  aspect-ratio: 5 / 4;
 }
 
-.yodel-image-media-content .media-frame-title {
+form[id="post"] .image-editor {
+  max-height: 80vh;
+}
+
+.yodel-image-generator-frame {
   position: relative;
-  left: 0 !important;
 }
 
-.yodel-image-media-content .media-frame-content {
-  position: relative;
-  top: 0;
-  left: 0;
-  flex: 1;
-  overflow: auto;
+.yodel-image-generator-frame .media-frame-content {
+  overflow: visible;
 }
 
-@media only screen and (max-width: 480px) {
-  .media-modal-frame .media-frame-content {
-    top: 40px;
+.yodel-image-generator-frame .yodel-image-credit-menu {
+  position: absolute;
+  top: -42px;
+  right: 72px;
+  display: none !important;
+}
+
+@media only screen and (min-width: 481px) {
+  .yodel-image-generator-frame .yodel-image-credit-menu {
+    display: flex !important;
   }
 }
