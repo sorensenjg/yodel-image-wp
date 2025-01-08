@@ -141,6 +141,7 @@ export class GeneratorHandler {
         yodel_image_input: JSON.stringify(image.input),
         yodel_image_seed: image.seed,
       });
+      console.log(response);
 
       if (!response.id) {
         throw new Error("Invalid response saving image");
@@ -159,13 +160,22 @@ export class GeneratorHandler {
   }
 
   private refreshAttachments() {
-    if (this.media.frame.content.get() !== null) {
-      this.media.frame.content.get().collection.props.set({
-        ignore: +new Date(),
-      });
-      this.media.frame.content.get().options.selection.reset();
-    } else {
-      this.media.frame.library.props.set({ ignore: +new Date() });
+    if (!this.media?.frame) return;
+
+    const frame = this.media.frame;
+    const content = frame.content?.get?.();
+
+    if (content) {
+      // Handle content view case
+      if (content.collection?.props) {
+        content.collection.props.set({ ignore: +new Date() });
+      }
+      if (content.options?.selection) {
+        content.options.selection.reset();
+      }
+    } else if (frame.library?.props) {
+      // Handle library view case
+      frame.library.props.set({ ignore: +new Date() });
     }
   }
 }
