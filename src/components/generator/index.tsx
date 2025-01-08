@@ -459,21 +459,20 @@ export function Generator({ onSave }: GeneratorProps) {
     try {
       for (let i = 0; i < values.outputQuantity; i++) {
         try {
-          const iterationHash = generateIterationSeed(
+          const iterationSeed = generateIterationSeed(
             selected.seed,
             i + 1,
-            0.2
+            0.1
           );
-          const iterationPrompt = `${values.prompt}, iteration: ${iterationHash}`;
 
           const output = await generateMutation.mutateAsync({
             model: selected.input.model,
-            prompt: iterationPrompt,
+            prompt: values.prompt,
             style: values.style,
             aspectRatio: values.aspectRatio,
             outputFormat: values.outputFormat,
             outputQuality: values.outputQuality,
-            seed: selected.seed,
+            seed: iterationSeed,
           });
 
           const newImage: OutputImage = {
@@ -481,9 +480,9 @@ export function Generator({ onSave }: GeneratorProps) {
             input: {
               ...values,
               model: selected.input.model,
-              prompt: iterationPrompt,
+              prompt: values.prompt,
             },
-            seed: selected.seed,
+            seed: iterationSeed,
             isPreview: true,
           };
 
@@ -637,17 +636,17 @@ export function Generator({ onSave }: GeneratorProps) {
                 </FormItem>
               )}
             />
-            {(!selected || !isSelectedProduction) && <ImageStyleSelector />}
-            {(!selected || !isSelectedProduction) && (
-              <Collapsible>
-                <CollapsibleTrigger asChild>
-                  <Button className="w-full justify-start px-0" variant="link">
-                    Advanced Settings
-                    <ChevronsUpDown className="h-4 w-4 ml-2" />
-                  </Button>
-                </CollapsibleTrigger>
+            <ImageStyleSelector />
+            <Collapsible>
+              <CollapsibleTrigger asChild>
+                <Button className="w-full justify-start px-0" variant="link">
+                  Advanced Settings
+                  <ChevronsUpDown className="h-4 w-4 ml-2" />
+                </Button>
+              </CollapsibleTrigger>
 
-                <CollapsibleContent className="space-y-4 pt-4">
+              <CollapsibleContent className="space-y-4 pt-4">
+                {!selected && (
                   <ModelSelector
                     // types={types}
                     models={
@@ -659,13 +658,13 @@ export function Generator({ onSave }: GeneratorProps) {
                         : []
                     }
                   />
-                  <AspectRatioSelector />
-                  <OutputFormatSelector />
-                  <OutputQualitySelector />
-                  <OutputQuantitySelector />
-                </CollapsibleContent>
-              </Collapsible>
-            )}
+                )}
+                <AspectRatioSelector />
+                <OutputFormatSelector />
+                <OutputQualitySelector />
+                <OutputQuantitySelector />
+              </CollapsibleContent>
+            </Collapsible>
             <div className="flex justify-end items-center space-x-2 !mt-12">
               {form.formState.isSubmitting && (
                 <LoadingIcon className="mr-2 h-4 w-4 animate-spin" />
@@ -773,10 +772,10 @@ export function Generator({ onSave }: GeneratorProps) {
                     ]}
                     onConfirm={() => {
                       // bypass form validation
-                      onSubmit(form.getValues(), "upscale");
-                      // form.handleSubmit(
-                      //   async (values) => await onSubmit(values, "upscale")
-                      // )();
+                      // await onSubmit(form.getValues(), "upscale");
+                      form.handleSubmit(
+                        async () => await onSubmit(form.getValues(), "upscale")
+                      )();
                     }}
                   >
                     <Button
@@ -845,7 +844,10 @@ export function Generator({ onSave }: GeneratorProps) {
                     "relative",
                     (images.length === 1 || !image.isPreview) && "col-span-2"
                   )}
-                  onClick={() => setSelected(selected === image ? null : image)}
+                  onClick={() => {
+                    setSelected(selected === image ? null : image);
+                    form.setValue("prompt", image.input.prompt);
+                  }}
                   onContextMenu={(e) => e.preventDefault()}
                   role="button"
                 >

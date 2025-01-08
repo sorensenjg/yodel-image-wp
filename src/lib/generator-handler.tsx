@@ -141,7 +141,6 @@ export class GeneratorHandler {
         yodel_image_input: JSON.stringify(image.input),
         yodel_image_seed: image.seed,
       });
-      console.log(response);
 
       if (!response.id) {
         throw new Error("Invalid response saving image");
