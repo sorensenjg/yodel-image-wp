@@ -14,7 +14,6 @@ const defaultConfig = getEditorDefaults();
 const editorConfig = {
   ...defaultConfig,
   utils: ["crop", "filter", "finetune", "annotate", "redact", "resize"],
-  enableCanvasAlpha: true,
   cropSelectPresetFilter: "landscape",
   cropSelectPresetOptions: [
     [undefined, "Custom"],
