@@ -43,6 +43,30 @@
   top: -3px;
 }
 
+#yodel-image-metadata__credit-menu {
+  position: absolute;
+  top: 50%;
+  right: 28px;
+  transform: translateY(-50%);
+  display: none;
+}
+
+#yodel-image-metadata__generate-all {
+  display: block;
+  float: left;
+  width: 100%;
+  margin: 0 0 10px;
+}
+
+.yodel-image-metadata__field {
+  position: relative;
+}
+
+.yodel-image-metadata__field input,
+.yodel-image-metadata__field textarea {
+  padding-right: 28px;
+}
+
 .image-editor,
 [id^="image-editor-"],
 #yodel-image-editor,
@@ -80,5 +104,9 @@ form[id="post"] .image-editor {
 @media only screen and (min-width: 481px) {
   .yodel-image-generator-frame .yodel-image-credit-menu {
     display: flex !important;
+  }
+
+  #yodel-image-metadata__credit-menu {
+    display: block;
   }
 }

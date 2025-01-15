@@ -54,7 +54,6 @@
 
       this.extendMediaFrameSelectView();
       this.extendMediaFramePostView();
-      // this.extendTest();
 
       // // Override the default media frame
       // wp.media.view.MediaFrame.Post = wp.media.view.MediaFrame.Post.extend({
@@ -285,59 +284,6 @@
 
           // Set the content of the frame
           this.content.set(yodelView);
-        },
-      });
-    }
-
-    extendTest() {
-      const View = this.media.view.MediaFrame.EditAttachments;
-
-      this.media.view.MediaFrame.EditAttachments = View.extend({
-        initialize: function () {
-          View.prototype.initialize.apply(this, arguments);
-
-          // Additional customizations
-          // console.log("Context:", this);
-          // console.log("Args:", arguments);
-
-          // Add a custom panel or modify existing ones
-          // this.addCustomSettingsPanel();
-        },
-        addCustomSettingsPanel: function () {
-          // Create a new view for the custom settings
-          const CustomSettingsView = wp.media.View.extend({
-            tagName: "div",
-            className: "yodel-custom-settings",
-            template: wp.media.template("yodel-custom-settings-template"),
-
-            initialize: function () {
-              wp.media.View.prototype.initialize.apply(this, arguments);
-            },
-
-            render: function () {
-              this.$el.html(this.template());
-              return this;
-            },
-          });
-
-          // Instantiate and render the custom settings view
-          const customSettings = new CustomSettingsView();
-          customSettings.render();
-
-          // Append the custom settings panel to the attachment details
-          this.$el
-            .find(".attachment-display-settings")
-            .append(customSettings.el);
-        },
-        render: function () {
-          View.prototype.render.apply(this, arguments);
-
-          const container = $(
-            '<div id="yodel-image-select-media-content">Hello Yodel Sidebar!</div>'
-          );
-          this.$el.find(".attachment-info").replaceWith(container);
-
-          return this;
         },
       });
     }

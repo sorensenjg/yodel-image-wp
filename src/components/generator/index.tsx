@@ -327,6 +327,9 @@ export function Generator({ onSave }: GeneratorProps) {
   const [images, setImages] = useState<OutputImage[]>([]);
   const [selected, setSelected] = useState<OutputImage | null>(null);
   const promptRef = useRef<HTMLTextAreaElement>(null); // Create ref for Prompt
+  const [currentAction, setCurrentAction] = useState<
+    "generate" | "iterate" | "upscale" | null
+  >(null);
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -372,6 +375,8 @@ export function Generator({ onSave }: GeneratorProps) {
     values: FormData,
     action: "generate" | "iterate" | "upscale"
   ) {
+    setCurrentAction(action); // Set the current action
+
     try {
       switch (action) {
         case "generate":
@@ -397,6 +402,8 @@ export function Generator({ onSave }: GeneratorProps) {
     } catch (error: any) {
       console.error("Error processing image(s):", error);
       toast.error(error.message || "Failed to process image(s)");
+    } finally {
+      setCurrentAction(null); // Reset the action when done
     }
   }
 
@@ -459,20 +466,21 @@ export function Generator({ onSave }: GeneratorProps) {
     try {
       for (let i = 0; i < values.outputQuantity; i++) {
         try {
-          const iterationSeed = generateIterationSeed(
+          const iterationHash = generateIterationSeed(
             selected.seed,
             i + 1,
-            0.1
+            0.2
           );
+          const iterationPrompt = `${values.prompt}, iteration: ${iterationHash}`;
 
           const output = await generateMutation.mutateAsync({
             model: selected.input.model,
-            prompt: values.prompt,
+            prompt: iterationPrompt,
             style: values.style,
             aspectRatio: values.aspectRatio,
             outputFormat: values.outputFormat,
             outputQuality: values.outputQuality,
-            seed: iterationSeed,
+            seed: selected.seed,
           });
 
           const newImage: OutputImage = {
@@ -480,9 +488,9 @@ export function Generator({ onSave }: GeneratorProps) {
             input: {
               ...values,
               model: selected.input.model,
-              prompt: values.prompt,
+              prompt: iterationPrompt,
             },
-            seed: iterationSeed,
+            seed: selected.seed,
             isPreview: true,
           };
 
@@ -636,17 +644,17 @@ export function Generator({ onSave }: GeneratorProps) {
                 </FormItem>
               )}
             />
-            <ImageStyleSelector />
-            <Collapsible>
-              <CollapsibleTrigger asChild>
-                <Button className="w-full justify-start px-0" variant="link">
-                  Advanced Settings
-                  <ChevronsUpDown className="h-4 w-4 ml-2" />
-                </Button>
-              </CollapsibleTrigger>
+            {(!selected || !isSelectedProduction) && <ImageStyleSelector />}
+            {(!selected || !isSelectedProduction) && (
+              <Collapsible>
+                <CollapsibleTrigger asChild>
+                  <Button className="w-full justify-start px-0" variant="link">
+                    Advanced Settings
+                    <ChevronsUpDown className="h-4 w-4 ml-2" />
+                  </Button>
+                </CollapsibleTrigger>
 
-              <CollapsibleContent className="space-y-4 pt-4">
-                {!selected && (
+                <CollapsibleContent className="space-y-4 pt-4">
                   <ModelSelector
                     // types={types}
                     models={
@@ -658,13 +666,13 @@ export function Generator({ onSave }: GeneratorProps) {
                         : []
                     }
                   />
-                )}
-                <AspectRatioSelector />
-                <OutputFormatSelector />
-                <OutputQualitySelector />
-                <OutputQuantitySelector />
-              </CollapsibleContent>
-            </Collapsible>
+                  <AspectRatioSelector />
+                  <OutputFormatSelector />
+                  <OutputQualitySelector />
+                  <OutputQuantitySelector />
+                </CollapsibleContent>
+              </Collapsible>
+            )}
             <div className="flex justify-end items-center space-x-2 !mt-12">
               {form.formState.isSubmitting && (
                 <LoadingIcon className="mr-2 h-4 w-4 animate-spin" />
@@ -772,9 +780,9 @@ export function Generator({ onSave }: GeneratorProps) {
                     ]}
                     onConfirm={() => {
                       // bypass form validation
-                      // await onSubmit(form.getValues(), "upscale");
+                      // onSubmit(form.getValues(), "upscale");
                       form.handleSubmit(
-                        async () => await onSubmit(form.getValues(), "upscale")
+                        async (values) => await onSubmit(values, "upscale")
                       )();
                     }}
                   >
@@ -822,19 +830,32 @@ export function Generator({ onSave }: GeneratorProps) {
             className={`grid gap-4 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3`}
           >
             {form.formState.isSubmitting &&
-              Array.from({ length: skeletons }).map((_, index) => (
+              (currentAction === "upscale" ? (
+                // Single skeleton for upscaling
                 <Skeleton
-                  key={index}
-                  className={cn(
-                    "w-full aspect-square rounded",
-                    images.length === 0 &&
-                      outputQuantityValue === 1 &&
-                      "col-span-2"
-                  )}
+                  className="w-full aspect-square rounded col-span-2"
                   style={{
                     aspectRatio: form.watch("aspectRatio").replace(":", " / "),
                   }}
                 />
+              ) : (
+                // Multiple skeletons for generation/iteration
+                Array.from({ length: skeletons }).map((_, index) => (
+                  <Skeleton
+                    key={index}
+                    className={cn(
+                      "w-full aspect-square rounded",
+                      images.length === 0 &&
+                        outputQuantityValue === 1 &&
+                        "col-span-2"
+                    )}
+                    style={{
+                      aspectRatio: form
+                        .watch("aspectRatio")
+                        .replace(":", " / "),
+                    }}
+                  />
+                ))
               ))}
             {images.length > 0 &&
               images.map((image, index) => (
@@ -844,10 +865,7 @@ export function Generator({ onSave }: GeneratorProps) {
                     "relative",
                     (images.length === 1 || !image.isPreview) && "col-span-2"
                   )}
-                  onClick={() => {
-                    setSelected(selected === image ? null : image);
-                    form.setValue("prompt", image.input.prompt);
-                  }}
+                  onClick={() => setSelected(selected === image ? null : image)}
                   onContextMenu={(e) => e.preventDefault()}
                   role="button"
                 >

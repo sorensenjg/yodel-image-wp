@@ -6,6 +6,7 @@ import type { Config, Settings } from "@/types";
 
 import { EditorHandler } from "@/lib/editor-handler";
 import { GeneratorHandler } from "@/lib/generator-handler";
+import { MetadataHandler } from "@/lib/metadata-handler";
 
 declare const wp: any;
 declare global {
@@ -67,3 +68,4 @@ window.addEventListener("beforeunload", () => {
 
 new EditorHandler();
 new GeneratorHandler();
+new MetadataHandler(yodelImageAdmin.config, yodelImageAdmin.settings);

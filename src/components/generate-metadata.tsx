@@ -60,7 +60,9 @@ function GenerateMetadataButton({
 }
 
 interface GenerateMetadataProps {
-  image: Image;
+  image: {
+    source_url: string;
+  };
   services: {
     name: string;
     cost: number;
@@ -120,8 +122,8 @@ export function GenerateMetadata({
         </DialogHeader>
         <DialogFooter>
           <div className="w-full flex justify-between items-center">
-            <p className="font-bold">
-              <span>Cost:</span>{" "}
+            <p className="font-bold flex-1 flex items-center">
+              <span style={{ all: "unset", marginRight: "4px" }}>Cost:</span>{" "}
               {services.reduce((acc, service) => acc + service.cost, 0)} Credits
             </p>
             {!hasInsufficientCredits ? (
