@@ -5,7 +5,7 @@ Tags: yodel, image, ai, editor, seo
 Requires at least: 6.0
 Tested up to: 6.5
 Requires PHP: 7.4
-Stable tag: 1.0.0 
+Stable tag: 1.2.2 
 
 Here is a short description of the plugin.  This should be no more than 150 characters.  No markup here.
 
